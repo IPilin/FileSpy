@@ -1,0 +1,17 @@
+﻿<Window x:Class="FileSpy.Windows.StatusWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FileSpy.Windows"
+        mc:Ignorable="d"
+        Title="StatusWindow" Height="100" Width="150"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" ShowInTaskbar="False" WindowStartupLocation="CenterOwner"
+        Loaded="Window_Loaded" Opacity="0">
+    <Grid>
+        <Border Background="#92B9C0" CornerRadius="10" Opacity=".4"/>
+        <Label HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="Gray" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">FileSpy</Label>
+        <Label x:Name="VersionLabel" Margin="0,25,0,0" HorizontalAlignment="Center" Foreground="Gray" VerticalAlignment="Top" FontSize="13" FontFamily="/FileSpy;component/Resources/#Ubuntu">[0.1.0.0]</Label>
+        <Label x:Name="StatusLabel" Margin="0,60,0,0" HorizontalAlignment="Center" VerticalAlignment="Top" Foreground="Green" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">Simple</Label>
+    </Grid>
+</Window>
