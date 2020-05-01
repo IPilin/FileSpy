@@ -27,7 +27,5 @@
         public static int FileInfo { get; private set; } = 15;
         public static int FileData { get; private set; } = 16;
         public static int FileOK { get; private set; } = 17;
-
-        public static int Test {get; private set;} = 9999999;
     }
 }
