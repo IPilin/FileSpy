@@ -28,6 +28,6 @@
         public static int FileData { get; private set; } = 16;
         public static int FileOK { get; private set; } = 17;
 
-        public static int Test {get; private set;} = 9999999;
+        public static int FileOKs { get; private set; } = 17;
     }
 }
