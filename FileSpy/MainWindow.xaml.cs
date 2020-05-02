@@ -19,6 +19,7 @@ namespace FileSpy
         List<UserControll> Users;
         List<SetupWindow> Setupers;
         List<GettingWindow> Getters;
+        List<VideoWindow> Videos;
 
         ConnectionClass Connection;
 
@@ -35,6 +36,8 @@ namespace FileSpy
             Users = new List<UserControll>();
             Setupers = new List<SetupWindow>();
             Getters = new List<GettingWindow>();
+            Videos = new List<VideoWindow>();
+
             Connection = new ConnectionClass(Settings);
             Connection.AcceptMessage += Connection_AcceptMessage;
         }
@@ -173,7 +176,6 @@ namespace FileSpy
                 Task.Run(FindConnection);
                 Dispatcher.Invoke(() => DisconnectLabel.Opacity = 0);
                 Connection.ID = message.Getter;
-                Connection.SendMessage(new MessageClass(Connection.ID, -1, Commands.KeyPass, 0, Settings.KeyWord));
                 Connection.SendMessage(new MessageClass(Connection.ID, -1, Commands.RsaKey, 0, Connection.Secure.GetPublicKey()));
             }
 
@@ -182,6 +184,7 @@ namespace FileSpy
                 Connection.Secure.SetAesKey(Connection.Secure.RsaDecrypt(message.Package));
                 Connection.Secured = true;
                 Connection.SendMessage(new MessageClass(Connection.ID, -1, Commands.GetList, 0));
+                Connection.SendMessage(new MessageClass(Connection.ID, -1, Commands.KeyPass, 0, Settings.KeyWord));
             }
 
             if (message.Command == Commands.List)
@@ -203,6 +206,8 @@ namespace FileSpy
                         user.ActiveEvent += User_ActiveEvent;
                         Users.Add(user);
                         FullTable.Items.Add(user);
+                        if (Status != "Simple")
+                            user.SetEnabled(1, true);
                     }
                 });
             }
@@ -363,12 +368,18 @@ namespace FileSpy
                 {
                     ok = false;
                     gid = r.Next(1, Int32.MaxValue / 2);
-                    for (int i = 0; i < Setupers.Count; i++)
+                    for (int i = 0; i < Videos.Count; i++)
                     {
-                        if (gid == Setupers[i].ID)
+                        if (gid == Videos[i].ID)
                             ok = true;
                     }
                 }
+
+                var video = new VideoWindow(gid, id, name, Connection);
+                Videos.Add(video);
+                video.CloseEvent += Video_CloseEvent;
+                video.Owner = this;
+                video.Show();
             }
         }
 
@@ -403,6 +414,12 @@ namespace FileSpy
         private void Getter_CloseEvent(GettingWindow window)
         {
             Getters.Remove(window);
+            GC.Collect();
+        }
+
+        private void Video_CloseEvent(VideoWindow window)
+        {
+            Videos.Remove(window);
             GC.Collect();
         }
     }

@@ -27,5 +27,8 @@
         public static int FileInfo { get; private set; } = 15;
         public static int FileData { get; private set; } = 16;
         public static int FileOK { get; private set; } = 17;
+
+        public static int RVideoModule { get; private set; } = 18;
+        public static int HVideoModule { get; private set; } = 19;
     }
 }
