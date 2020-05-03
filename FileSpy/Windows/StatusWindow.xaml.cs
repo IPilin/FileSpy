@@ -17,9 +17,11 @@ namespace FileSpy.Windows
 
             VersionLabel.Content = ver;
 
-            if (status == "Admin")
+            if (status == "Simple")
+                StatusLabel.Foreground = Brushes.Green;
+            else if (status == "Admin")
                 StatusLabel.Foreground = Brushes.Blue;
-            if (status == "Root")
+            else
                 StatusLabel.Foreground = Brushes.Black;
 
             StatusLabel.Content = status;
