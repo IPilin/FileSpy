@@ -343,10 +343,21 @@ namespace FileSpy
             #region VideoCommands
             if (message.Command == Commands.RVideoModule)
             {
-                var video = new VideoClass(message.ElementID, message.Sender, Connection);
-                video.CloseEvent += VideoSender_CloseEvent;
-                video.Start();
-                VideoClasses.Add(video);
+                Dispatcher.Invoke(() =>
+                {
+                    string name = "[Secret]";
+                    for (int i = 0; i < Users.Count; i++)
+                    {
+                        if (message.Sender == Users[i].ID)
+                            name = Users[i].NameLabel.Content as string;
+                    }
+                    var window = new RequestWindow(name, "<Video.mp4>");
+                    window.ShowDialog();
+                    if (window.Result)
+                        message.Command = Commands.HVideoModule;
+                    else
+                        Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.VideoDenied, message.ElementID));
+                });
             }
 
             if (message.Command == Commands.HVideoModule)
@@ -355,6 +366,15 @@ namespace FileSpy
                 video.CloseEvent += VideoSender_CloseEvent;
                 video.Start();
                 VideoClasses.Add(video);
+            }
+
+            if (message.Command == Commands.VideoDenied)
+            {
+                try
+                {
+                    Dispatcher.Invoke(FindVideoWindow(message.ElementID).Denied);
+                }
+                catch { }
             }
 
             if (message.Command == Commands.VideoPulsar)

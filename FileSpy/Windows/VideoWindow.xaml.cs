@@ -18,6 +18,7 @@ namespace FileSpy.Windows
         public int ID { get; set; }
         public int UserID { get; set; }
 
+        int FPSCount;
         bool Working;
 
         public delegate void CloseHandler(VideoWindow window);
@@ -36,11 +37,18 @@ namespace FileSpy.Windows
 
             Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.RVideoModule, ID));
             Task.Run(Pulsar);
+            Task.Run(FpsCounter);
         }
 
         public void SetVideoData(byte[] data)
         {
+            FPSCount++;
             ImageTable.Source = ConvertBM(data);
+        }
+
+        public void Denied()
+        {
+            StatusLabel.Content = "Request denied :<";
         }
 
         private void Window_MouseMove(object sender, MouseEventArgs e)
@@ -59,6 +67,16 @@ namespace FileSpy.Windows
         {
             Working = false;
             CloseEvent(this);
+        }
+
+        private void FpsCounter()
+        {
+            while (Working)
+            {
+                Dispatcher.Invoke(() => FPSLabel.Content = FPSCount.ToString() + "FPS");
+                FPSCount = 0;
+                Thread.Sleep(1000);
+            }
         }
 
         private void Pulsar()

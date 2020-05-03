@@ -9,7 +9,11 @@
         WindowStartupLocation="CenterOwner" FontFamily="/FileSpy;component/Resources/#Ubuntu" Closed="Window_Closed">
     <Grid>
         <Image x:Name="ImageTable"/>
-        <Label FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center">Waiting for responce.</Label>
+        <Label x:Name="FPSLabel" FontSize="16">
+            <Label.Effect>
+                <DropShadowEffect ShadowDepth="0" BlurRadius="5" Color="#FFFFFF" />
+            </Label.Effect> 0FPS</Label>
+        <Label x:Name="StatusLabel" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center">Waiting for responce.</Label>
         <Grid x:Name="V" VerticalAlignment="Bottom" Height="100">
             <Border Margin="0,5,0,5" CornerRadius="5" Background="Gray" Opacity="0.8" Width="300">
                 <Grid>
