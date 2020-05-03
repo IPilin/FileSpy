@@ -49,7 +49,7 @@ namespace FileSpy.Classes
         public void SetKeyWord(string word)
         {
             KeyWord = word;
-            using (var fs = new FileStream("settings.xml", FileMode.OpenOrCreate, FileAccess.Write))
+            using (var fs = new FileStream("settings.xml", FileMode.Create, FileAccess.Write))
             {
                 var ser = new XmlSerializer(typeof(SettingsClass));
                 ser.Serialize(fs, this);
