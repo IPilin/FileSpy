@@ -30,5 +30,9 @@
 
         public static int RVideoModule { get; private set; } = 18;
         public static int HVideoModule { get; private set; } = 19;
+        public static int VideoData { get; private set; } = 20;
+        public static int VideoPulsar { get; private set; } = 21;
+        public static int VideoClose { get; private set; } = 22;
+        public static int VideoDenied { get; private set; } = 23;
     }
 }

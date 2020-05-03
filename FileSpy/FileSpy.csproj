@@ -46,6 +46,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -71,6 +72,7 @@
     <Compile Include="Classes\MessageClass.cs" />
     <Compile Include="Classes\SecuredClass.cs" />
     <Compile Include="Classes\SettingsClass.cs" />
+    <Compile Include="Classes\VideoClass.cs" />
     <Compile Include="Elements\SwitchControl.xaml.cs">
       <DependentUpon>SwitchControl.xaml</DependentUpon>
     </Compile>

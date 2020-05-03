@@ -19,7 +19,8 @@ namespace FileSpy
         List<UserControll> Users;
         List<SetupWindow> Setupers;
         List<GettingWindow> Getters;
-        List<VideoWindow> Videos;
+        List<VideoWindow> VideoWindows;
+        List<VideoClass> VideoClasses;
 
         ConnectionClass Connection;
 
@@ -36,7 +37,8 @@ namespace FileSpy
             Users = new List<UserControll>();
             Setupers = new List<SetupWindow>();
             Getters = new List<GettingWindow>();
-            Videos = new List<VideoWindow>();
+            VideoWindows = new List<VideoWindow>();
+            VideoClasses = new List<VideoClass>();
 
             Connection = new ConnectionClass(Settings);
             Connection.AcceptMessage += Connection_AcceptMessage;
@@ -155,6 +157,7 @@ namespace FileSpy
 
         private void Connection_AcceptMessage(MessageClass message)
         {
+            #region StandartCommands
             if (message.Command == Commands.Disconnect)
             {
                 Task.Run(LostConnection);
@@ -244,7 +247,9 @@ namespace FileSpy
                     }
                 });
             }
+            #endregion
 
+            #region FileCommands
             if (message.Command == Commands.RFileSend)
             {
                 Dispatcher.Invoke(() =>
@@ -332,6 +337,80 @@ namespace FileSpy
                     catch { }
                 });
             }
+
+            #endregion
+
+            #region VideoCommands
+            if (message.Command == Commands.RVideoModule)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    string name = "[Secret]";
+                    for (int i = 0; i < Users.Count; i++)
+                    {
+                        if (message.Sender == Users[i].ID)
+                            name = Users[i].NameLabel.Content as string;
+                    }
+                    var window = new RequestWindow(name, "<Video.mp4>");
+                    window.ShowDialog();
+                    if (window.Result)
+                        message.Command = Commands.HVideoModule;
+                    else
+                        Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.VideoDenied, message.ElementID));
+                });
+            }
+
+            if (message.Command == Commands.HVideoModule)
+            {
+                var video = new VideoClass(message.ElementID, message.Sender, Connection);
+                video.CloseEvent += VideoSender_CloseEvent;
+                video.Start();
+                VideoClasses.Add(video);
+            }
+
+            if (message.Command == Commands.VideoDenied)
+            {
+                try
+                {
+                    Dispatcher.Invoke(FindVideoWindow(message.ElementID).Denied);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.VideoPulsar)
+            {
+                try
+                {
+                    Dispatcher.Invoke(FindVideoClasses(message.ElementID, message.Sender).Pulsar);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.VideoClose)
+            {
+                try
+                {
+                    Dispatcher.Invoke(FindVideoClasses(message.ElementID, message.Sender).Close);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.VideoData)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        var video = FindVideoWindow(message.ElementID);
+                        video.SetVideoData(message.Package);
+                    }
+                    catch
+                    {
+                        Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.VideoClose, message.ElementID));
+                    }
+                });
+            }
+            #endregion
         }
 
         private void User_ActiveEvent(int id, string name, int command)
@@ -368,15 +447,15 @@ namespace FileSpy
                 {
                     ok = false;
                     gid = r.Next(1, Int32.MaxValue / 2);
-                    for (int i = 0; i < Videos.Count; i++)
+                    for (int i = 0; i < VideoWindows.Count; i++)
                     {
-                        if (gid == Videos[i].ID)
+                        if (gid == VideoWindows[i].ID)
                             ok = true;
                     }
                 }
 
                 var video = new VideoWindow(gid, id, name, Connection);
-                Videos.Add(video);
+                VideoWindows.Add(video);
                 video.CloseEvent += Video_CloseEvent;
                 video.Owner = this;
                 video.Show();
@@ -405,6 +484,28 @@ namespace FileSpy
             return null;
         }
 
+        private VideoWindow FindVideoWindow(int id)
+        {
+            for (int i = 0; i < VideoWindows.Count; i++)
+            {
+                if (VideoWindows[i].ID == id)
+                    return VideoWindows[i];
+            }
+
+            return null;
+        }
+
+        private VideoClass FindVideoClasses(int id, int userID)
+        {
+            for (int i = 0; i < VideoClasses.Count; i++)
+            {
+                if (VideoClasses[i].ID == id && VideoClasses[i].UserID == userID)
+                    return VideoClasses[i];
+            }
+
+            return null;
+        }
+
         private void Setup_CloseEvent(SetupWindow window)
         {
             Setupers.Remove(window);
@@ -419,7 +520,13 @@ namespace FileSpy
 
         private void Video_CloseEvent(VideoWindow window)
         {
-            Videos.Remove(window);
+            VideoWindows.Remove(window);
+            GC.Collect();
+        }
+
+        private void VideoSender_CloseEvent(VideoClass videoClass)
+        {
+            VideoClasses.Remove(videoClass);
             GC.Collect();
         }
     }
