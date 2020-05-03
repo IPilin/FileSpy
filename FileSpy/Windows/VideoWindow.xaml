@@ -11,10 +11,10 @@
         <Image x:Name="ImageTable"/>
         <Label FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center">Waiting for responce.</Label>
         <Grid x:Name="V" VerticalAlignment="Bottom" Height="100">
-            <Border Margin="0,5,0,5" CornerRadius="5" Background="Gray" Opacity="0.7" Width="300">
+            <Border Margin="0,5,0,5" CornerRadius="5" Background="Gray" Opacity="0.8" Width="300">
                 <Grid>
                     <Grid Margin="0,0,150,0">
-                        <CheckBox VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left" Margin="5">Video</CheckBox>
+                        <CheckBox IsChecked="True" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left" Margin="5">Video</CheckBox>
                         <Label FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,15,0,0">FPS</Label>
                         <TextBox Margin="60,20,0,0" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Width="30">10</TextBox>
                         <CheckBox Margin="5,40,0,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left">FpsCounter</CheckBox>
