@@ -103,6 +103,7 @@ namespace FileSpy.Classes
             if (Connected)
             {
                 Connected = false;
+                MicroInput.StopRecording();
                 CloseEvent(this);
             }
         }

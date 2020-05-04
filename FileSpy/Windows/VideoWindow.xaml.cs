@@ -21,7 +21,6 @@ namespace FileSpy.Windows
         public int UserID { get; set; }
 
         int FPSCount;
-        bool Working;
 
         WaveOut MicroOut;
         public BufferedWaveProvider MicroBuffer { get; set; }
@@ -39,7 +38,6 @@ namespace FileSpy.Windows
             UserID = userId;
             Title = userName;
             Connection = connection;
-            Working = true;
 
             MicroOut = new WaveOut();
             MicroBuffer = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
@@ -78,13 +76,12 @@ namespace FileSpy.Windows
 
         private void Window_Closed(object sender, System.EventArgs e)
         {
-            Working = false;
             CloseEvent(this);
         }
 
         private void FpsCounter()
         {
-            while (Working)
+            while (Dispatcher.Invoke(() => IsLoaded))
             {
                 Dispatcher.Invoke(() => FPSLabel.Content = FPSCount.ToString() + "FPS");
                 FPSCount = 0;
@@ -94,7 +91,7 @@ namespace FileSpy.Windows
 
         private void Pulsar()
         {
-            while (Working)
+            while (Dispatcher.Invoke(() => IsLoaded))
             {
                 Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoPulsar, ID));
                 Thread.Sleep(5000);

