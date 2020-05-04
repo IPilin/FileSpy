@@ -132,7 +132,7 @@ namespace FileSpy.Classes
                     using (var ms = new MemoryStream())
                     {
                         byte[] fullPacket = new byte[65536];
-                        byte[] partPacket = new byte[65536 % count];
+                        byte[] partPacket = new byte[count % 65536];
                         int read = 0;
                         while (count != read)
                         {
