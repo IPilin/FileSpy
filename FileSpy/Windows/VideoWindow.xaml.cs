@@ -123,5 +123,56 @@ namespace FileSpy.Windows
 
             return source;
         }
+
+        private void SizeSlider_MouseEnter(object sender, MouseEventArgs e)
+        {
+            InfoPopup.PlacementTarget = sender as UIElement;
+            InfoPopup.HorizontalOffset = 55;
+            InfoPopup.IsOpen = true;
+        }
+
+        private void SizeSlider_MouseLeave(object sender, MouseEventArgs e)
+        {
+            InfoPopup.IsOpen = false;
+        }
+
+        private void SizeSlider_MouseMove(object sender, MouseEventArgs e)
+        {
+            switch (SizeSlider.Value)
+            {
+                case 0:
+                    InfoLabel.Content = "360p";
+                    break;
+                case 1:
+                    InfoLabel.Content = "480p";
+                    break;
+                case 2:
+                    InfoLabel.Content = "720p";
+                    break;
+            }
+            InfoPopup.IsOpen = false;
+            InfoPopup.IsOpen = true;
+        }
+
+        private void QualitySlider_MouseMove(object sender, MouseEventArgs e)
+        {
+            InfoLabel.Content = QualitySlider.Value.ToString("0.0");
+            InfoPopup.IsOpen = false;
+            InfoPopup.IsOpen = true;
+        }
+
+        private void MicroSlider_MouseMove(object sender, MouseEventArgs e)
+        {
+            InfoLabel.Content = MicroSlider.Value.ToString("0.0");
+            InfoPopup.IsOpen = false;
+            InfoPopup.IsOpen = true;
+        }
+
+        private void AudioSlider_MouseMove(object sender, MouseEventArgs e)
+        {
+            InfoLabel.Content = AudioSlider.Value.ToString("0.0");
+            InfoPopup.IsOpen = false;
+            InfoPopup.IsOpen = true;
+        }
     }
 }
