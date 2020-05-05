@@ -66,11 +66,8 @@ namespace FileSpy.Classes
         {
             while (Connected)
             {
-                if ((DateTime.Now - LastTime).TotalSeconds > 2)
-                {
-                    SendMessage(new MessageClass(ID, -1, Commands.Ping, 0));
-                }
-                Thread.Sleep(1);
+                SendMessage(new MessageClass(ID, -1, Commands.Ping, 0));
+                Thread.Sleep(4000);
             }
         }
 
@@ -90,7 +87,7 @@ namespace FileSpy.Classes
                         Thread.Sleep(1);
                     }
                 }
-                catch 
+                catch
                 {
                     Disconnect();
                 }
