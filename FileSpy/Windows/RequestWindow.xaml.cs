@@ -37,5 +37,11 @@ namespace FileSpy.Windows
             Result = true;
             Close();
         }
+
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            Result = true;
+            Close();
+        }
     }
 }

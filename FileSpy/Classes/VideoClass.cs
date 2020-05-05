@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NAudio.Wave;
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -18,14 +19,14 @@ namespace FileSpy.Classes
         bool Connected;
         DateTime LastTime;
 
-        bool VideoStream;
+        public bool VideoStream { get; set; }
         DateTime LastFPS;
-        int MaxFps;
-        long Quality;
-        int Size;
+        public int MaxFps { get; set; }
+        public long Quality { get; set; }
+        public int Size { get; set; }
 
-        bool MicroStream;
-        bool AudioStream;
+        public WaveInEvent MicroInput { get; set; }
+        public bool AudioStream { get; set; }
 
         public delegate void CloseHandler(VideoClass videoClass);
         public event CloseHandler CloseEvent;
@@ -43,6 +44,15 @@ namespace FileSpy.Classes
             MaxFps = 10;
             Quality = 50L;
             Size = 1;
+
+            MicroInput = new WaveInEvent();
+            MicroInput.WaveFormat = new WaveFormat(8000, 16, 1);
+            MicroInput.DataAvailable += MicroInput_DataAvailable;
+        }
+
+        private void MicroInput_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.MicroData, ID, e.Buffer));
         }
 
         public void Start()
@@ -93,6 +103,7 @@ namespace FileSpy.Classes
             if (Connected)
             {
                 Connected = false;
+                MicroInput.StopRecording();
                 CloseEvent(this);
             }
         }

@@ -12,7 +12,7 @@
                 <DropShadowEffect BlurRadius="4" Opacity="0.25" ShadowDepth="1"/>
             </Border.Effect>
             <Grid>
-                <Label x:Name="NameLabel" Margin="5,0,0,0" MaxWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">Def0lt</Label>
+                <Label x:Name="NameLabel" MouseUp="NameLabel_MouseUp" Margin="5,0,0,0" MaxWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">Def0lt</Label>
                 <Label x:Name="DesktopLabel" Margin="110,0,0,0" Foreground="#D3D3D3" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14" FontFamily="/FileSpy;component/Resources/#Ubuntu">DESKTOP-09CPLSP</Label>
                 <Ellipse x:Name="FileButton" Opacity="0" IsEnabled="False" MouseLeftButtonUp="FileButton_MouseLeftButtonUp" Margin="0,0,130,0" Cursor="Hand" Fill="#127FE8" HorizontalAlignment="Right" Width="15" Height="15"/>
                 <Ellipse x:Name="VideoButton" Opacity="0" IsEnabled="False" MouseLeftButtonUp="VideoButton_MouseLeftButtonUp"  Margin="0,0,105,0" Cursor="Hand" Fill="#127FE8" HorizontalAlignment="Right" Width="15" Height="15"/>

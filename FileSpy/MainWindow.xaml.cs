@@ -3,11 +3,16 @@ using FileSpy.Elements;
 using FileSpy.Windows;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 
 namespace FileSpy
 {
@@ -26,8 +31,28 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.1.0.0]";
+        string Version = "[0.1.1.0]";
         string Status = "Simple";
+
+        #region Imports
+        [DllImport("Kernel32.dll")]
+        static extern long GetTickCount64();
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool ShowWindow(IntPtr hwnd, WinStyle style);
+
+        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
+        static extern IntPtr FindWindowByCaption(string lpClassName, string lpWindowName);
+
+        enum WinStyle
+        {
+            Hide = 0,
+            ShowNormal = 1,
+            ShowMinimized = 2,
+            ShowMaximized = 3,
+            Show = 5
+        }
+        #endregion
 
         public MainWindow()
         {
@@ -40,6 +65,13 @@ namespace FileSpy
             VideoWindows = new List<VideoWindow>();
             VideoClasses = new List<VideoClass>();
 
+            Process[] processes = Process.GetProcessesByName("filespy");
+            if (processes.Length > 1)
+            {
+                System.Windows.MessageBox.Show("This program is already run!");
+                this.Close();
+            }
+
             Connection = new ConnectionClass(Settings);
             Connection.AcceptMessage += Connection_AcceptMessage;
         }
@@ -51,7 +83,20 @@ namespace FileSpy
 
         private void CloseButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => OpenAnim(false));
+            //Task.Run(() => OpenAnim(false));
+            this.Hide();
+            NotifyIcon icon = new NotifyIcon();
+            using (var iconStream = System.Windows.Application.GetResourceStream(new Uri("Resources/magnet.ico", UriKind.Relative)).Stream)
+            {
+                icon.Icon = new System.Drawing.Icon(iconStream);
+                icon.Visible = true;
+                icon.DoubleClick +=
+                    delegate (object sender1, EventArgs args)
+                    {
+                        this.Show();
+                        icon.Visible = false;
+                    };
+            }
         }
 
         private void MinimazeButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -68,7 +113,7 @@ namespace FileSpy
                 Connection.SendMessage(new MessageClass(Connection.ID, -1, Commands.ChangeName, 0, Settings.UserName));
         }
 
-        private void Window_KeyUp(object sender, KeyEventArgs e)
+        private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
@@ -96,15 +141,19 @@ namespace FileSpy
             Connection.Start();
         }
 
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
+        }
+
         private void LostConnection()
         {
-            for (int i = 0; i < 7; i++)
+            while (Dispatcher.Invoke(() => GreenColor.Offset < 1.4) && !Connection.Connected)
             {
                 Dispatcher.Invoke(() => GreenColor.Offset += 0.1);
                 Thread.Sleep(50);
             }
 
-            for (int i = 0; i < 7; i++)
+            while (Dispatcher.Invoke(() => RedColor.Offset > 0.7) && !Connection.Connected)
             {
                 Dispatcher.Invoke(() => RedColor.Offset -= 0.1);
                 Thread.Sleep(50);
@@ -113,13 +162,13 @@ namespace FileSpy
 
         private void FindConnection()
         {
-            for (int i = 0; i < 7; i++)
+            while (Dispatcher.Invoke(() => RedColor.Offset < 1.4) && Connection.Connected)
             {
                 Dispatcher.Invoke(() => RedColor.Offset += 0.1);
                 Thread.Sleep(50);
             }
 
-            for (int i = 0; i < 7; i++)
+            while (Dispatcher.Invoke(() => GreenColor.Offset > 0.7) && Connection.Connected)
             {
                 Dispatcher.Invoke(() => GreenColor.Offset -= 0.1);
                 Thread.Sleep(50);
@@ -150,8 +199,6 @@ namespace FileSpy
                     delay -= 0.5f;
                     Thread.Sleep(Convert.ToInt32(delay));
                 }
-
-                Dispatcher.Invoke(Close);
             }
         }
 
@@ -192,27 +239,31 @@ namespace FileSpy
 
             if (message.Command == Commands.List)
             {
-                string[] com = message.GetStringPackage().Split(';');
-
-                Dispatcher.Invoke(() =>
+                try
                 {
-                    int count = Users.Count;
-                    for (int i = 0; i < count; i++)
-                    {
-                        FullTable.Items.Remove(Users[0]);
-                        Users.Remove(Users[0]);
-                    }
+                    string[] com = message.GetStringPackage().Split(';');
 
-                    for (int i = 0; i < com.Length; i += 3)
+                    Dispatcher.Invoke(() =>
                     {
-                        var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
-                        user.ActiveEvent += User_ActiveEvent;
-                        Users.Add(user);
-                        FullTable.Items.Add(user);
-                        if (Status != "Simple")
-                            user.SetEnabled(1, true);
-                    }
-                });
+                        int count = Users.Count;
+                        for (int i = 0; i < count; i++)
+                        {
+                            FullTable.Items.Remove(Users[0]);
+                            Users.Remove(Users[0]);
+                        }
+
+                        for (int i = 0; i < com.Length; i += 3)
+                        {
+                            var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
+                            user.ActiveEvent += User_ActiveEvent;
+                            Users.Add(user);
+                            FullTable.Items.Add(user);
+                            if (Status != "Simple")
+                                user.SetEnabled(1, true);
+                        }
+                    });
+                }
+                catch { }
             }
 
             if (message.Command == Commands.ChangeStatus)
@@ -222,6 +273,8 @@ namespace FileSpy
                 {
                     Dispatcher.Invoke(() =>
                     {
+                        for (int i = 0; i < VideoClasses.Count; i++)
+                            VideoClasses[i].Close();
                         var window = new StatusWindow(Version, Status);
                         window.Owner = this;
                         window.Show();
@@ -247,25 +300,45 @@ namespace FileSpy
                     }
                 });
             }
+
+            if (message.Command == Commands.GetInfo)
+            {
+                string result = Version + "\n";
+                if (Status != "Simple")
+                    result += "[Secret]\n";
+                else
+                    result += "Simple\n";
+                result += TimeSpan.FromMilliseconds(GetTickCount64()).ToString();
+
+                Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.Info, 0, result));
+            }
+
+            if (message.Command == Commands.Info)
+            {
+                Dispatcher.Invoke(() => System.Windows.MessageBox.Show(message.GetStringPackage()));
+            }
             #endregion
 
             #region FileCommands
             if (message.Command == Commands.RFileSend)
             {
-                Dispatcher.Invoke(() =>
+                Task.Run(() =>
                 {
-                    string name = "[Secret]";
-                    for (int i = 0; i < Users.Count; i++)
+                    Dispatcher.Invoke(() =>
                     {
-                        if (message.Sender == Users[i].ID)
-                            name = Users[i].NameLabel.Content as string;
-                    }
-                    var window = new RequestWindow(name, message.GetStringPackage());
-                    window.ShowDialog();
-                    if (window.Result)
-                        Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.AcceptFile, message.ElementID));
-                    else
-                        Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.CancelFile, message.ElementID));
+                        string name = "[Secret]";
+                        for (int i = 0; i < Users.Count; i++)
+                        {
+                            if (message.Sender == Users[i].ID)
+                                name = Users[i].NameLabel.Content as string;
+                        }
+                        var window = new RequestWindow(name, message.GetStringPackage());
+                        window.ShowDialog();
+                        if (window.Result)
+                            Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.AcceptFile, message.ElementID));
+                        else
+                            Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.CancelFile, message.ElementID));
+                    });
                 });
             }
 
@@ -343,20 +416,28 @@ namespace FileSpy
             #region VideoCommands
             if (message.Command == Commands.RVideoModule)
             {
-                Dispatcher.Invoke(() =>
+                Task.Run(() =>
                 {
-                    string name = "[Secret]";
-                    for (int i = 0; i < Users.Count; i++)
+                    Dispatcher.Invoke(() =>
                     {
-                        if (message.Sender == Users[i].ID)
-                            name = Users[i].NameLabel.Content as string;
-                    }
-                    var window = new RequestWindow(name, "<Video.mp4>");
-                    window.ShowDialog();
-                    if (window.Result)
-                        message.Command = Commands.HVideoModule;
-                    else
-                        Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.VideoDenied, message.ElementID));
+                        string name = "[Secret]";
+                        for (int i = 0; i < Users.Count; i++)
+                        {
+                            if (message.Sender == Users[i].ID)
+                                name = Users[i].NameLabel.Content as string;
+                        }
+                        var window = new RequestWindow(name, "<Video.mp4>");
+                        window.ShowDialog();
+                        if (window.Result)
+                        {
+                            var video = new VideoClass(message.ElementID, message.Sender, Connection);
+                            video.CloseEvent += VideoSender_CloseEvent;
+                            video.Start();
+                            VideoClasses.Add(video);
+                        }
+                        else
+                            Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.VideoDenied, message.ElementID));
+                    });
                 });
             }
 
@@ -401,8 +482,7 @@ namespace FileSpy
                 {
                     try
                     {
-                        var video = FindVideoWindow(message.ElementID);
-                        video.SetVideoData(message.Package);
+                        FindVideoWindow(message.ElementID).SetVideoData(message.Package);
                     }
                     catch
                     {
@@ -410,11 +490,77 @@ namespace FileSpy
                     }
                 });
             }
+
+            if (message.Command == Commands.SetVideo)
+            {
+                try
+                {
+                    if (message.GetStringPackage() == "True")
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).VideoStream = true);
+                    else
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).VideoStream = false);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetMaxFps)
+            {
+                try
+                {
+                    Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).MaxFps = Convert.ToInt32(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetSize)
+            {
+                try
+                {
+                    Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).Size = Convert.ToInt32(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetQuality)
+            {
+                try
+                {
+                    Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).Quality = Convert.ToInt32(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetMicro)
+            {
+                try
+                {
+                    if (message.GetStringPackage() == "True")
+                        Dispatcher.Invoke(FindVideoClasses(message.ElementID, message.Sender).MicroInput.StartRecording);
+                    else
+                        Dispatcher.Invoke(FindVideoClasses(message.ElementID, message.Sender).MicroInput.StopRecording);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.MicroData)
+            {
+                try
+                {
+                    if (message.Package != null)
+                        Dispatcher.Invoke(() => FindVideoWindow(message.ElementID).MicroBuffer.AddSamples(message.Package, 0, message.Package.Length));
+                }
+                catch { }
+            }
             #endregion
         }
 
         private void User_ActiveEvent(int id, string name, int command)
         {
+            if (command == ElementCommands.InfoModule)
+            {
+                Connection.SendMessage(new MessageClass(Connection.ID, id, Commands.GetInfo, 0));
+            }
+
             if (command == ElementCommands.SendModule)
             {
                 Random r = new Random();

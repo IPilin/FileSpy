@@ -18,8 +18,6 @@ namespace FileSpy.Classes
         Socket Client;
         SettingsClass Settings;
 
-        DateTime LastTime;
-
         public delegate void MessageHandler(MessageClass message);
         public event MessageHandler AcceptMessage;
 
@@ -48,9 +46,9 @@ namespace FileSpy.Classes
                     try
                     {
                         Client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                        Client.Connect(IPAddress.Parse("192.168.1.77"), 6000);
+                        Client.Connect("restored.ddns.net", 6000);
+                        //Client.Connect(IPAddress.Parse("192.168.1.65"), 6000);
                         Connected = true;
-                        LastTime = DateTime.Now;
                         Task.Run(Pulsar);
                         Task.Run(Listener);
 
@@ -65,11 +63,8 @@ namespace FileSpy.Classes
         {
             while (Connected)
             {
-                if ((DateTime.Now - LastTime).TotalSeconds > 5)
-                {
-                    SendMessage(new MessageClass(ID, -1, Commands.Ping, 0));
-                }
-                Thread.Sleep(1);
+                SendMessage(new MessageClass(ID, -1, Commands.Ping, 0));
+                Thread.Sleep(4000);
             }
         }
 
@@ -82,14 +77,13 @@ namespace FileSpy.Classes
                     if (Client.Available > 0)
                     {
                         AcceptMessage(ReciveMessage());
-                        LastTime = DateTime.Now;
                     }
                     else
                     {
                         Thread.Sleep(1);
                     }
                 }
-                catch 
+                catch
                 {
                     Disconnect();
                 }
@@ -106,10 +100,10 @@ namespace FileSpy.Classes
             try
             {
                 Client.Send(buffer);
-                LastTime = DateTime.Now;
             }
-            catch
+            catch (Exception e)
             {
+                string a = e.Message;
                 Disconnect();
             }
         }
@@ -132,7 +126,7 @@ namespace FileSpy.Classes
                     using (var ms = new MemoryStream())
                     {
                         byte[] fullPacket = new byte[65536];
-                        byte[] partPacket = new byte[65536 % count];
+                        byte[] partPacket = new byte[count % 65536];
                         int read = 0;
                         while (count != read)
                         {

@@ -13,6 +13,7 @@ namespace FileSpy.Elements
         public event EventHandler ActiveEvent;
 
         public int ID { get; set; }
+        bool Admin;
 
         public UserControll(int id, string name, string desktop)
         {
@@ -30,11 +31,12 @@ namespace FileSpy.Elements
             VideoButton.IsEnabled = enabled;
             KeyButton.Opacity = opacity;
             KeyButton.IsEnabled = enabled;
+
+            Admin = enabled;
         }
 
         private void FileButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-
         }
 
         private void VideoButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -50,6 +52,12 @@ namespace FileSpy.Elements
         private void SendButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             ActiveEvent(ID, NameLabel.Content as string, ElementCommands.SendModule);
+        }
+
+        private void NameLabel_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (Admin)
+                ActiveEvent(ID, NameLabel.Content as string, ElementCommands.InfoModule);
         }
     }
 }

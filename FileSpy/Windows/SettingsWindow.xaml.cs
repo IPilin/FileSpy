@@ -1,4 +1,6 @@
 ﻿using FileSpy.Classes;
+using Microsoft.Win32;
+using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
@@ -19,12 +21,16 @@ namespace FileSpy.Windows
             Settings = settings;
             UserBox.Text = settings.UserName;
             PathLabel.Content = settings.PathToSave;
+            AutorunCheck.IsChecked = settings.AutoRun;
+            HiddenCheck.IsChecked = settings.HiddenStart;
         }
 
         private void SaveButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             Settings.UserName = UserBox.Text;
             Settings.PathToSave = PathLabel.Content as string;
+            Settings.AutoRun = (bool)AutorunCheck.IsChecked;
+            Settings.HiddenStart = (bool)HiddenCheck.IsChecked;
 
             Settings.Save();
             Save = true;
@@ -50,6 +56,61 @@ namespace FileSpy.Windows
             var window = new FolderBrowserDialog();
             if (window.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 PathLabel.Content = window.SelectedPath;
+        }
+
+        private void AutorunCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!IsStartupItem())
+                SetAutorunValue(true, Environment.CurrentDirectory + "\\Updater.exe");
+        }
+
+        private void AutorunCheck_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (IsStartupItem())
+                SetAutorunValue(false, Environment.CurrentDirectory + "\\Updater.exe");
+        }
+
+        private void HiddenCheck_Checked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void HiddenCheck_Unchecked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        public bool SetAutorunValue(bool autorun, string path)
+        {
+            RegistryKey reg;
+            reg = Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\");
+            try
+            {
+                if (autorun)
+                    reg.SetValue("FileSpy", path);
+                else
+                    reg.DeleteValue("FileSpy");
+
+                reg.Close();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private bool IsStartupItem()
+        {
+            // The path to the key where Windows looks for startup applications
+            RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+            if (rkApp.GetValue("FileSpy") == null)
+                // The value doesn't exist, the application is not set to run at startup
+                return false;
+            else
+                // The value exists, the application is set to run at startup
+                return true;
         }
     }
 }

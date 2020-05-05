@@ -9,30 +9,39 @@
         WindowStartupLocation="CenterOwner" FontFamily="/FileSpy;component/Resources/#Ubuntu" Closed="Window_Closed">
     <Grid>
         <Image x:Name="ImageTable"/>
-        <Label x:Name="FPSLabel" FontSize="16">
+        <Label x:Name="FPSLabel" Opacity="0" FontSize="16">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="0" BlurRadius="5" Color="#FFFFFF" />
             </Label.Effect> 0FPS</Label>
         <Label x:Name="StatusLabel" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Center">Waiting for responce.</Label>
+        <Popup x:Name="InfoPopup" StaysOpen="True" AllowsTransparency="True">
+            <Border CornerRadius="5" Background="SkyBlue">
+                <Label x:Name="InfoLabel">360p</Label>
+            </Border>
+        </Popup>
         <Grid x:Name="V" VerticalAlignment="Bottom" Height="100">
-            <Border Margin="0,5,0,5" CornerRadius="5" Background="Gray" Opacity="0.8" Width="300">
+            <Border Margin="0,5,0,5" CornerRadius="5" Background="SkyBlue" Opacity="0.8" Width="450">
                 <Grid>
-                    <Grid Margin="0,0,150,0">
-                        <CheckBox IsChecked="True" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left" Margin="5">Video</CheckBox>
+                    <Grid Margin="0,0,300,0">
+                        <CheckBox x:Name="VideoCheck" Checked="VideoCheck_Checked" Unchecked="VideoCheck_Checked" IsChecked="True" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left" Margin="5">Video</CheckBox>
                         <Label FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,15,0,0">FPS</Label>
-                        <TextBox Margin="60,20,0,0" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Width="30">10</TextBox>
-                        <CheckBox Margin="5,40,0,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left">FpsCounter</CheckBox>
-                        <CheckBox Margin="5,60,0,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left">Security</CheckBox>
+                        <TextBox x:Name="MaxFpsText" KeyUp="MaxFpsText_KeyUp" Margin="60,20,0,0" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left" Width="30">10</TextBox>
+                        <Slider x:Name="SizeSlider" ValueChanged="SizeSlider_ValueChanged" MouseEnter="SizeSlider_MouseEnter" MouseMove="SizeSlider_MouseMove"  MouseLeave="SizeSlider_MouseLeave" Margin="5,40,0,0" Value="1" Maximum="2" TickFrequency="1" IsSnapToTickEnabled="True" VerticalAlignment="Top"/>
+                        <Slider x:Name="QualitySlider" ValueChanged="QualitySlider_ValueChanged"  MouseEnter="SizeSlider_MouseEnter" MouseMove="QualitySlider_MouseMove" MouseLeave="SizeSlider_MouseLeave" Margin="5,65,0,0" Value="50" Maximum="100" TickFrequency="10" IsSnapToTickEnabled="True" VerticalAlignment="Top"/>
                     </Grid>
-                    <Grid Margin="150,0,0,0">
+                    <Grid Margin="150,0,150,0">
                         <Grid Margin="0,0,0,45">
-                            <CheckBox Margin="5" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left">Micro</CheckBox>
-                            <Slider Maximum="200" Value="100" TickFrequency="10" IsSnapToTickEnabled="True" VerticalAlignment="Bottom"/>
+                            <CheckBox x:Name="MicroCheck" Checked="MicroCheck_Checked" Unchecked="MicroCheck_Checked" Margin="5" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left">Micro</CheckBox>
+                            <Slider x:Name="MicroSlider" ValueChanged="MicroSlider_ValueChanged" MouseEnter="SizeSlider_MouseEnter" MouseLeave="SizeSlider_MouseLeave" MouseMove="MicroSlider_MouseMove" Margin="5" Maximum="2" Value="1" TickFrequency="0.1" IsSnapToTickEnabled="True" VerticalAlignment="Bottom"/>
                         </Grid>
                         <Grid Margin="0,45,0,0">
-                            <CheckBox Margin="5" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left">Audio</CheckBox>
-                            <Slider Maximum="200" Value="100" TickFrequency="10" IsSnapToTickEnabled="True" VerticalAlignment="Bottom"/>
+                            <CheckBox x:Name="AudioCheck" Checked="AudioCheck_Checked" Unchecked="AudioCheck_Checked" Margin="5" FontSize="14" VerticalAlignment="Top" HorizontalAlignment="Left">Audio</CheckBox>
+                            <Slider x:Name="AudioSlider" ValueChanged="AudioSlider_ValueChanged" MouseEnter="SizeSlider_MouseEnter" MouseLeave="SizeSlider_MouseLeave" MouseMove="AudioSlider_MouseMove" Margin="5" Maximum="2" Value="1" TickFrequency="0.1" IsSnapToTickEnabled="True" VerticalAlignment="Bottom"/>
                         </Grid>
+                    </Grid>
+                    <Grid Margin="300,0,0,0">
+                        <CheckBox x:Name="FpsVisibleCheck" Checked="FpsVisibleCheck_Checked" Unchecked="FpsVisibleCheck_Checked" Margin="5,5,0,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left">FpsCounter</CheckBox>
+                        <CheckBox x:Name="SecurityCheck" Checked="SecurityCheck_Checked" Unchecked="SecurityCheck_Checked" Margin="5,25,0,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left">Security</CheckBox>
                     </Grid>
                 </Grid>
             </Border>
