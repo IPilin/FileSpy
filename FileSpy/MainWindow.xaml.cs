@@ -3,12 +3,16 @@ using FileSpy.Elements;
 using FileSpy.Windows;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 
 namespace FileSpy
 {
@@ -30,6 +34,24 @@ namespace FileSpy
         string Version = "[0.1.0.0]";
         string Status = "Simple";
 
+        #region Imports
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        static extern bool ShowWindow(IntPtr hwnd, WinStyle style);
+
+        [DllImport("user32.dll", EntryPoint = "FindWindow", SetLastError = true)]
+        static extern IntPtr FindWindowByCaption(string lpClassName, string lpWindowName);
+
+        enum WinStyle
+        {
+            Hide = 0,
+            ShowNormal = 1,
+            ShowMinimized = 2,
+            ShowMaximized = 3,
+            Show = 5
+        }
+        #endregion
+
         public MainWindow()
         {
             //WindowBlur.SetIsEnabled(this, true);
@@ -40,6 +62,13 @@ namespace FileSpy
             Getters = new List<GettingWindow>();
             VideoWindows = new List<VideoWindow>();
             VideoClasses = new List<VideoClass>();
+
+            Process[] processes = Process.GetProcessesByName("filespy");
+            if (processes.Length > 1)
+            {
+                System.Windows.MessageBox.Show("This program is already run!");
+                this.Close();
+            }
 
             Connection = new ConnectionClass(Settings);
             Connection.AcceptMessage += Connection_AcceptMessage;
@@ -52,7 +81,20 @@ namespace FileSpy
 
         private void CloseButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            Task.Run(() => OpenAnim(false));
+            //Task.Run(() => OpenAnim(false));
+            this.Hide();
+            NotifyIcon icon = new NotifyIcon();
+            using (var iconStream = System.Windows.Application.GetResourceStream(new Uri("Resources/magnet.ico", UriKind.Relative)).Stream)
+            {
+                icon.Icon = new System.Drawing.Icon(iconStream);
+                icon.Visible = true;
+                icon.DoubleClick +=
+                    delegate (object sender1, EventArgs args)
+                    {
+                        this.Show();
+                        icon.Visible = false;
+                    };
+            }
         }
 
         private void MinimazeButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -69,7 +111,7 @@ namespace FileSpy
                 Connection.SendMessage(new MessageClass(Connection.ID, -1, Commands.ChangeName, 0, Settings.UserName));
         }
 
-        private void Window_KeyUp(object sender, KeyEventArgs e)
+        private void Window_KeyUp(object sender, System.Windows.Input.KeyEventArgs e)
         {
             if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
@@ -95,6 +137,10 @@ namespace FileSpy
         {
             Task.Run(() => OpenAnim(true));
             Connection.Start();
+        }
+
+        private void Window_StateChanged(object sender, EventArgs e)
+        {
         }
 
         private void LostConnection()
@@ -151,8 +197,6 @@ namespace FileSpy
                     delay -= 0.5f;
                     Thread.Sleep(Convert.ToInt32(delay));
                 }
-
-                Dispatcher.Invoke(Close);
             }
         }
 
@@ -259,7 +303,7 @@ namespace FileSpy
             #region FileCommands
             if (message.Command == Commands.RFileSend)
             {
-                Task.Run(() => 
+                Task.Run(() =>
                 {
                     Dispatcher.Invoke(() =>
                     {
