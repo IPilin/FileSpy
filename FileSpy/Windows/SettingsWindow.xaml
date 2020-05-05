@@ -36,6 +36,11 @@
                     </Rectangle.Effect>
                 </Rectangle>
                 <Label Margin="20,0,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="/FileSpy;component/Resources/#Ubuntu">Autorun</Label>
+                <CheckBox x:Name="AutorunCheck" Checked="AutorunCheck_Checked" Unchecked="AutorunCheck_Unchecked" Margin="0,0,20,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="1.3" ScaleY="1.3" />
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
             </Grid>
             <Grid Margin="0,120,0,0" Height="40" VerticalAlignment="Top">
                 <Rectangle Fill="#FFFEFF" Margin="10,5,10,5" RadiusX="10" RadiusY="10">
@@ -44,6 +49,11 @@
                     </Rectangle.Effect>
                 </Rectangle>
                 <Label Margin="20,0,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="/FileSpy;component/Resources/#Ubuntu">Startup hidden</Label>
+                <CheckBox x:Name="HiddenCheck" Checked="HiddenCheck_Checked" Unchecked="HiddenCheck_Unchecked" Margin="0,0,20,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                    <CheckBox.LayoutTransform>
+                        <ScaleTransform ScaleX="1.3" ScaleY="1.3" />
+                    </CheckBox.LayoutTransform>
+                </CheckBox>
             </Grid>
             <Grid Margin="0,180,0,0" Height="40" VerticalAlignment="Top">
                 <Border x:Name="RestoreButton" MouseLeftButtonUp="RestoreButton_MouseLeftButtonUp"  Margin="10,0,0,0" Cursor="Hand" VerticalAlignment="Bottom" HorizontalAlignment="Left" Height="30" Width="80" CornerRadius="15">

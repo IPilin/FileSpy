@@ -43,5 +43,8 @@
         public static int SetAudio { get; private set; } = 29;
 
         public static int MicroData { get; private set; } = 30;
+
+        public static int GetInfo { get; private set; } = 31;
+        public static int Info { get; private set; } = 32;
     }
 }

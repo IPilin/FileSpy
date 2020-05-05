@@ -31,10 +31,12 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.1.0.0]";
+        string Version = "[0.1.1.0]";
         string Status = "Simple";
 
         #region Imports
+        [DllImport("Kernel32.dll")]
+        static extern long GetTickCount64();
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hwnd, WinStyle style);
@@ -298,6 +300,23 @@ namespace FileSpy
                     }
                 });
             }
+
+            if (message.Command == Commands.GetInfo)
+            {
+                string result = Version + "\n";
+                if (Status != "Simple")
+                    result += "[Secret]\n";
+                else
+                    result += "Simple\n";
+                result += TimeSpan.FromMilliseconds(GetTickCount64()).ToString();
+
+                Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.Info, 0, result));
+            }
+
+            if (message.Command == Commands.Info)
+            {
+                Dispatcher.Invoke(() => System.Windows.MessageBox.Show(message.GetStringPackage()));
+            }
             #endregion
 
             #region FileCommands
@@ -537,6 +556,11 @@ namespace FileSpy
 
         private void User_ActiveEvent(int id, string name, int command)
         {
+            if (command == ElementCommands.InfoModule)
+            {
+                Connection.SendMessage(new MessageClass(Connection.ID, id, Commands.GetInfo, 0));
+            }
+
             if (command == ElementCommands.SendModule)
             {
                 Random r = new Random();
