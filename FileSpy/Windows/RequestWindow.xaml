@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:FileSpy.Windows"
         mc:Ignorable="d"
         Title="RequestWindow" Height="110" Width="350"
-        WindowStyle="None" AllowsTransparency="True" Background="Transparent" WindowStartupLocation="CenterScreen" Topmost="True">
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent" WindowStartupLocation="CenterScreen" Topmost="True"
+        KeyUp="Window_KeyUp">
     <Window.Effect>
         <DropShadowEffect Color="Gray" BlurRadius="10" Opacity="0.5" Direction="-90" RenderingBias="Quality" ShadowDepth="4"/>
     </Window.Effect>

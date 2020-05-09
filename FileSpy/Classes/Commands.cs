@@ -27,5 +27,24 @@
         public static int FileInfo { get; private set; } = 15;
         public static int FileData { get; private set; } = 16;
         public static int FileOK { get; private set; } = 17;
+
+        public static int RVideoModule { get; private set; } = 18;
+        public static int HVideoModule { get; private set; } = 19;
+        public static int VideoData { get; private set; } = 20;
+        public static int VideoPulsar { get; private set; } = 21;
+        public static int VideoClose { get; private set; } = 22;
+        public static int VideoDenied { get; private set; } = 23;
+
+        public static int SetVideo { get; private set; } = 24;
+        public static int SetMaxFps { get; private set; } = 25;
+        public static int SetSize { get; private set; } = 26;
+        public static int SetQuality { get; private set; } = 27;
+        public static int SetMicro { get; private set; } = 28;
+        public static int SetAudio { get; private set; } = 29;
+
+        public static int MicroData { get; private set; } = 30;
+
+        public static int GetInfo { get; private set; } = 31;
+        public static int Info { get; private set; } = 32;
     }
 }
