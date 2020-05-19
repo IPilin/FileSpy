@@ -80,6 +80,7 @@
                 </Ellipse>
             </Grid>
         </Border>
+        <Label x:Name="NameLabel" Margin="0,-2,0,0" Foreground="#E3E3E5" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">File Spy</Label>
         <Border x:Name="Table" Margin="0,30,0,0" CornerRadius="10" Background="#FFFEFF">
             <Grid>
                 <Grid Height="60" VerticalAlignment="Top">

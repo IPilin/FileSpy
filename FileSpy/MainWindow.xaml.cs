@@ -31,7 +31,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.1.1.0]";
+        string Version = "[0.1.1.1]";
         string Status = "Simple";
 
         #region Imports
@@ -65,12 +65,8 @@ namespace FileSpy
             VideoWindows = new List<VideoWindow>();
             VideoClasses = new List<VideoClass>();
 
-            Process[] processes = Process.GetProcessesByName("filespy");
-            if (processes.Length > 1)
-            {
-                System.Windows.MessageBox.Show("This program is already run!");
-                this.Close();
-            }
+            if (Environment.GetCommandLineArgs().Length == 1)
+                Close();
 
             Connection = new ConnectionClass(Settings);
             Connection.AcceptMessage += Connection_AcceptMessage;
