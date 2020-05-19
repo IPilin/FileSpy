@@ -254,6 +254,18 @@ namespace FileSpy.Windows
         {
 
         }
+
+        private void CursorCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Connection != null)
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetCursor, ID, CursorCheck.IsChecked.ToString()));
+        }
+
+        private void CursorCheck_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (Connection != null)
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetCursor, ID, CursorCheck.IsChecked.ToString()));
+        }
         #endregion
     }
 }

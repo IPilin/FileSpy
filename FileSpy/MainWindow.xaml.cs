@@ -547,6 +547,18 @@ namespace FileSpy
                 }
                 catch { }
             }
+
+            if (message.Command == Commands.SetCursor)
+            {
+                try
+                {
+                    if (message.GetStringPackage() == "True")
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).Cursor = true);
+                    else
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).Cursor = false);
+                }
+                catch { }
+            }
             #endregion
         }
 

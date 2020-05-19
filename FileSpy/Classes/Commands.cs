@@ -46,5 +46,7 @@
 
         public static int GetInfo { get; private set; } = 31;
         public static int Info { get; private set; } = 32;
+
+        public static int SetCursor { get; private set; } = 33;
     }
 }
