@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FileSpy.Windows"
         mc:Ignorable="d"
         Title="VideoWindow" Height="450" Width="800" MouseMove="Window_MouseMove"
-        WindowStartupLocation="CenterOwner" FontFamily="/FileSpy;component/Resources/#Ubuntu" Closed="Window_Closed">
+        WindowStartupLocation="CenterOwner" FontFamily="/FileSpy;component/Resources/#Ubuntu" Closed="Window_Closed" ShowInTaskbar="True">
     <Grid>
         <Image x:Name="ImageTable"/>
         <Label x:Name="FPSLabel" Opacity="0" FontSize="16">
