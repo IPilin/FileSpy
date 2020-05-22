@@ -3,8 +3,6 @@ using FileSpy.Elements;
 using FileSpy.Windows;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +10,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media.Animation;
 
 namespace FileSpy
 {
@@ -145,6 +142,7 @@ namespace FileSpy
 
         private void Window_StateChanged(object sender, EventArgs e)
         {
+
         }
 
         private void LostConnection()
