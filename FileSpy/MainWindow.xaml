@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="FileSpy" Height="300" Width="510" WindowStyle="None" Background="Transparent" AllowsTransparency="True" 
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
-        Loaded="Window_Loaded" KeyUp="Window_KeyUp" StateChanged="Window_StateChanged">
+        Loaded="Window_Loaded" KeyUp="Window_KeyUp" StateChanged="Window_StateChanged" Closing="Window_Closing">
     <Window.Resources>
         <SolidColorBrush x:Key="ListBox.Static.Background" Color="#FFFFFFFF"/>
         <SolidColorBrush x:Key="ListBox.Static.Border" Color="#FFABADB3"/>

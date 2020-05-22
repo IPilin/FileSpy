@@ -137,6 +137,12 @@ namespace FileSpy
             Connection.Start();
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            CloseButton_MouseLeftButtonUp(null, null);
+        }
+
         private void Window_StateChanged(object sender, EventArgs e)
         {
         }
