@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 
 namespace FileSpy.Windows
@@ -34,6 +35,7 @@ namespace FileSpy.Windows
         public VideoWindow(int id, int userId, string userName, ConnectionClass connection)
         {
             InitializeComponent();
+
             ID = id;
             UserID = userId;
             Title = userName;
