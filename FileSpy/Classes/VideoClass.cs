@@ -76,12 +76,20 @@ namespace FileSpy.Classes
             {
                 if (VideoStream)
                 {
-                    LastFPS = DateTime.Now;
+                    try
+                    {
+                        LastFPS = DateTime.Now;
 
-                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor)));
+                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor)));
 
-                    while ((DateTime.Now - LastFPS).TotalMilliseconds < 1000 / MaxFps)
-                        Thread.Sleep(1);
+                        while ((DateTime.Now - LastFPS).TotalMilliseconds < 1000 / MaxFps)
+                            Thread.Sleep(1);
+                    }
+                    catch { }
+                }
+                else
+                {
+                    Thread.Sleep(1);
                 }
             }
         }

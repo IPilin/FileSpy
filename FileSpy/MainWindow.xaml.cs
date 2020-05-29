@@ -28,7 +28,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.1.1.1]";
+        string Version = "[0.2.0.0]";
         string Status = "Simple";
 
         #region Imports
