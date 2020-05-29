@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FileSpy.Windows"
         mc:Ignorable="d"
         Title="VideoWindow" Height="450" Width="800" MouseMove="Window_MouseMove"
-        WindowStartupLocation="CenterOwner" FontFamily="/FileSpy;component/Resources/#Ubuntu" Closed="Window_Closed">
+        WindowStartupLocation="CenterOwner" FontFamily="/FileSpy;component/Resources/#Ubuntu" Closed="Window_Closed" ShowInTaskbar="True">
     <Grid>
         <Image x:Name="ImageTable"/>
         <Label x:Name="FPSLabel" Opacity="0" FontSize="16">
@@ -42,6 +42,7 @@
                     <Grid Margin="300,0,0,0">
                         <CheckBox x:Name="FpsVisibleCheck" Checked="FpsVisibleCheck_Checked" Unchecked="FpsVisibleCheck_Checked" Margin="5,5,0,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left">FpsCounter</CheckBox>
                         <CheckBox x:Name="SecurityCheck" Checked="SecurityCheck_Checked" Unchecked="SecurityCheck_Checked" Margin="5,25,0,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left">Security</CheckBox>
+                        <CheckBox x:Name="CursorCheck" Checked="CursorCheck_Checked" Unchecked="CursorCheck_Unchecked" Margin="5,45,0,0" VerticalAlignment="Top" FontSize="14" HorizontalAlignment="Left">Cursor</CheckBox>
                     </Grid>
                 </Grid>
             </Border>

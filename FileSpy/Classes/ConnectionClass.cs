@@ -101,9 +101,8 @@ namespace FileSpy.Classes
             {
                 Client.Send(buffer);
             }
-            catch (Exception e)
+            catch
             {
-                string a = e.Message;
                 Disconnect();
             }
         }

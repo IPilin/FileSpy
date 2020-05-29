@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 
 namespace FileSpy.Windows
@@ -34,6 +35,7 @@ namespace FileSpy.Windows
         public VideoWindow(int id, int userId, string userName, ConnectionClass connection)
         {
             InitializeComponent();
+
             ID = id;
             UserID = userId;
             Title = userName;
@@ -253,6 +255,18 @@ namespace FileSpy.Windows
         private void SecurityCheck_Checked(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void CursorCheck_Checked(object sender, RoutedEventArgs e)
+        {
+            if (Connection != null)
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetCursor, ID, CursorCheck.IsChecked.ToString()));
+        }
+
+        private void CursorCheck_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (Connection != null)
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetCursor, ID, CursorCheck.IsChecked.ToString()));
         }
         #endregion
     }

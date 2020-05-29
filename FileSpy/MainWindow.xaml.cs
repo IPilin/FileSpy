@@ -3,8 +3,6 @@ using FileSpy.Elements;
 using FileSpy.Windows;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,7 +10,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media.Animation;
 
 namespace FileSpy
 {
@@ -31,7 +28,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.1.1.0]";
+        string Version = "[0.2.0.0]";
         string Status = "Simple";
 
         #region Imports
@@ -65,12 +62,8 @@ namespace FileSpy
             VideoWindows = new List<VideoWindow>();
             VideoClasses = new List<VideoClass>();
 
-            Process[] processes = Process.GetProcessesByName("filespy");
-            if (processes.Length > 1)
-            {
-                System.Windows.MessageBox.Show("This program is already run!");
-                this.Close();
-            }
+            if (Environment.GetCommandLineArgs().Length == 1)
+                Close();
 
             Connection = new ConnectionClass(Settings);
             Connection.AcceptMessage += Connection_AcceptMessage;
@@ -141,8 +134,15 @@ namespace FileSpy
             Connection.Start();
         }
 
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            e.Cancel = true;
+            CloseButton_MouseLeftButtonUp(null, null);
+        }
+
         private void Window_StateChanged(object sender, EventArgs e)
         {
+
         }
 
         private void LostConnection()
@@ -548,6 +548,18 @@ namespace FileSpy
                 {
                     if (message.Package != null)
                         Dispatcher.Invoke(() => FindVideoWindow(message.ElementID).MicroBuffer.AddSamples(message.Package, 0, message.Package.Length));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetCursor)
+            {
+                try
+                {
+                    if (message.GetStringPackage() == "True")
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).Cursor = true);
+                    else
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).Cursor = false);
                 }
                 catch { }
             }
