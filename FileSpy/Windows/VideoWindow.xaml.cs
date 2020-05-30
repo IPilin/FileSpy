@@ -76,6 +76,11 @@ namespace FileSpy.Windows
             }
         }
 
+        private void Window_MouseLeave(object sender, MouseEventArgs e)
+        {
+            V.Opacity = 0;
+        }
+
         private void Window_Closed(object sender, System.EventArgs e)
         {
             CloseEvent(this);
