@@ -255,6 +255,9 @@ namespace FileSpy.Windows
                         break;
                     }
                 }
+
+                if (dir == 2)
+                    break;
             }
 
             string res = "";
