@@ -21,7 +21,7 @@ namespace FileSpy.Elements
     /// </summary>
     public partial class SwitchControl : UserControl
     {
-        bool Mode;
+        public bool Mode { get; private set; }
         bool Busy;
 
         public SwitchControl()

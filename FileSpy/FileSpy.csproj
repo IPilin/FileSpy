@@ -109,6 +109,7 @@
     <Compile Include="Classes\Commands.cs" />
     <Compile Include="Classes\ConnectionClass.cs" />
     <Compile Include="Classes\ElementCommands.cs" />
+    <Compile Include="Classes\FlashWindowHelper.cs" />
     <Compile Include="Classes\MessageClass.cs" />
     <Compile Include="Classes\SecuredClass.cs" />
     <Compile Include="Classes\SettingsClass.cs" />

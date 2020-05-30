@@ -28,8 +28,10 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.1.2.0]";
+        string Version = "[0.1.2.1]";
         string Status = "Simple";
+
+        FlashWindowHelper Helper;
 
         #region Imports
         [DllImport("Kernel32.dll")]
@@ -55,6 +57,9 @@ namespace FileSpy
         {
             //WindowBlur.SetIsEnabled(this, true);
             InitializeComponent();
+
+            Helper = new FlashWindowHelper(System.Windows.Application.Current);
+
             Settings = SettingsClass.Create();
             Users = new List<UserControll>();
             Setupers = new List<SetupWindow>();
@@ -130,7 +135,6 @@ namespace FileSpy
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => OpenAnim(true));
             Connection.Start();
         }
 
@@ -172,33 +176,6 @@ namespace FileSpy
             {
                 Dispatcher.Invoke(() => GreenColor.Offset -= 0.1);
                 Thread.Sleep(50);
-            }
-        }
-
-        private void OpenAnim(bool loaded)
-        {
-            float delay;
-            if (loaded)
-            {
-                delay = 5;
-                for (int i = 0; i < 20; i++)
-                {
-                    Dispatcher.Invoke(() => Grid.Opacity += 0.05);
-                    Dispatcher.Invoke(() => Grid.Margin = new Thickness(Grid.Margin.Left - 12.25, Grid.Margin.Top, Grid.Margin.Right - 12.25, Grid.Margin.Bottom));
-                    delay += 0.5f;
-                    Thread.Sleep(Convert.ToInt32(delay));
-                }
-            }
-            else
-            {
-                delay = 15;
-                for (int i = 0; i < 20; i++)
-                {
-                    Dispatcher.Invoke(() => Grid.Opacity -= 0.05);
-                    Dispatcher.Invoke(() => Grid.Margin = new Thickness(Grid.Margin.Left + 12.25, Grid.Margin.Top, Grid.Margin.Right + 12.25, Grid.Margin.Bottom));
-                    delay -= 0.5f;
-                    Thread.Sleep(Convert.ToInt32(delay));
-                }
             }
         }
 
@@ -333,6 +310,13 @@ namespace FileSpy
                                 name = Users[i].NameLabel.Content as string;
                         }
                         var window = new RequestWindow(name, message.GetStringPackage());
+                        window.Owner = this;
+                        if (!SilenceControll.Mode)
+                        {
+                            window.Topmost = false;
+                            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        }
+                        Helper.FlashApplicationWindow();
                         window.ShowDialog();
                         if (window.Result)
                             Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.AcceptFile, message.ElementID));
@@ -440,6 +424,13 @@ namespace FileSpy
                                 name = Users[i].NameLabel.Content as string;
                         }
                         var window = new RequestWindow(name, "<Video.mp4>");
+                        window.Owner = this;
+                        if (!SilenceControll.Mode)
+                        {
+                            window.Topmost = false;
+                            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                        }
+                        Helper.FlashApplicationWindow();
                         window.ShowDialog();
                         if (window.Result)
                         {
