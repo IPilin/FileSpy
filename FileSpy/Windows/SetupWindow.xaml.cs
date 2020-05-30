@@ -325,7 +325,11 @@ namespace FileSpy.Windows
 
         private void SendButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            FileInfo file = null;
             if (File.Exists(FilePath))
+                file = new FileInfo(FilePath);
+
+            if (file != null && file.Length > 0)
             {
                 Task.Run(() =>
                 {
