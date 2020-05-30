@@ -31,6 +31,7 @@ namespace FileSpy
         string Version = "[0.1.2.1]";
         string Status = "Simple";
 
+        NotifyIcon Icons;
         FlashWindowHelper Helper;
 
         #region Imports
@@ -83,16 +84,18 @@ namespace FileSpy
         {
             //Task.Run(() => OpenAnim(false));
             this.Hide();
-            NotifyIcon icon = new NotifyIcon();
+            if (Icon != null)
+                Icons.Dispose();
+            Icons = new NotifyIcon();
             using (var iconStream = System.Windows.Application.GetResourceStream(new Uri("Resources/magnet.ico", UriKind.Relative)).Stream)
             {
-                icon.Icon = new System.Drawing.Icon(iconStream);
-                icon.Visible = true;
-                icon.DoubleClick +=
+                Icons.Icon = new System.Drawing.Icon(iconStream);
+                Icons.Visible = true;
+                Icons.DoubleClick +=
                     delegate (object sender1, EventArgs args)
                     {
                         this.Show();
-                        icon.Visible = false;
+                        Icons.Visible = false;
                     };
             }
         }
@@ -315,6 +318,13 @@ namespace FileSpy
                         {
                             window.Topmost = false;
                             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            if (!IsActive)
+                            {
+                                this.Show();
+                                if (Icons != null)
+                                    Icons.Visible = false;
+                                this.WindowState = WindowState.Minimized;
+                            }
                         }
                         Helper.FlashApplicationWindow();
                         window.ShowDialog();
@@ -429,6 +439,13 @@ namespace FileSpy
                         {
                             window.Topmost = false;
                             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            if (!IsActive)
+                            {
+                                this.Show();
+                                if (Icons != null)
+                                    Icons.Visible = false;
+                                this.WindowState = WindowState.Minimized;
+                            }
                         }
                         Helper.FlashApplicationWindow();
                         window.ShowDialog();
