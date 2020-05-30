@@ -411,6 +411,19 @@ namespace FileSpy
                 });
             }
 
+            if (message.Command == Commands.FileDone)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        var getter = FindGetter(message.ElementID, message.Sender);
+                        getter.Done();
+                    }
+                    catch { }
+                });
+            }
+
             #endregion
 
             #region VideoCommands

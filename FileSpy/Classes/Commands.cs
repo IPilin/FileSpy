@@ -27,6 +27,7 @@
         public static int FileInfo { get; private set; } = 15;
         public static int FileData { get; private set; } = 16;
         public static int FileOK { get; private set; } = 17;
+        public static int FileDone { get; private set; } = 34;
 
         public static int RVideoModule { get; private set; } = 18;
         public static int HVideoModule { get; private set; } = 19;
@@ -48,5 +49,6 @@
         public static int Info { get; private set; } = 32;
 
         public static int SetCursor { get; private set; } = 33;
+        //num = 34;
     }
 }

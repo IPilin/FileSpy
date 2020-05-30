@@ -139,6 +139,8 @@ namespace FileSpy.Windows
             }
             else
             {
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.FileDone, ID));
+                Dispatcher.Invoke(() => SpeedLabel.Content = "Done!");
                 GC.Collect();
             }
         }

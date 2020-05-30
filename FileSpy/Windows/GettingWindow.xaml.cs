@@ -122,6 +122,11 @@ namespace FileSpy.Windows
             }
         }
 
+        public void Done()
+        {
+            Dispatcher.Invoke(() => SpeedLabel.Content = "Done!");
+        }
+
         private double GetSmallSize(long size)
         {
             float sdata = size;
