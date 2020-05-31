@@ -24,7 +24,6 @@ namespace FileSpy.Windows
         int MaxFps;
         int FPSCount;
         DateTime LastFrame;
-        bool Framed;
 
         WaveOut MicroOut;
         public BufferedWaveProvider MicroBuffer { get; set; }
