@@ -80,7 +80,7 @@ namespace FileSpy.Classes
                     {
                         LastFPS = DateTime.Now;
 
-                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor)));
+                        Task.Run(() => Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor))));
 
                         while ((DateTime.Now - LastFPS).TotalMilliseconds < 1000 / MaxFps)
                             Thread.Sleep(1);
