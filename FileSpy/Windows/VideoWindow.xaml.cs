@@ -69,6 +69,7 @@ namespace FileSpy.Windows
                 {
                     StatusLabel.Opacity = 0;
                     FPSCount++;
+                    LastFrame = DateTime.Now;
                     ImageTable.Source = ConvertBM(data);
                 });
             });
