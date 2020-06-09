@@ -29,7 +29,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.1.2.3]";
+        string Version = "[0.1.2.4]";
         string Status = "Simple";
 
         NotifyIcon Icons;
@@ -679,7 +679,6 @@ namespace FileSpy
                 var video = new VideoWindow(gid, id, name, Connection);
                 VideoWindows.Add(video);
                 video.CloseEvent += Video_CloseEvent;
-                video.Owner = this;
                 video.Show();
             }
         }
