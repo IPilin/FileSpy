@@ -126,7 +126,6 @@ namespace FileSpy
 
         private void CloseButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //Task.Run(() => OpenAnim(false));
             this.Hide();
             if (Icon != null)
                 Icons.Dispose();
