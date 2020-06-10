@@ -115,9 +115,7 @@
     <Compile Include="Classes\SecuredClass.cs" />
     <Compile Include="Classes\SettingsClass.cs" />
     <Compile Include="Classes\VideoClass.cs" />
-    <Compile Include="Elements\DirControll.xaml.cs">
-      <DependentUpon>DirControll.xaml</DependentUpon>
-    </Compile>
+    <Compile Include="Classes\VideoData.cs" />
     <Compile Include="Elements\SwitchControl.xaml.cs">
       <DependentUpon>SwitchControl.xaml</DependentUpon>
     </Compile>
@@ -149,10 +147,6 @@
     <Compile Include="Windows\VideoWindow.xaml.cs">
       <DependentUpon>VideoWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="Elements\DirControll.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Elements\SwitchControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

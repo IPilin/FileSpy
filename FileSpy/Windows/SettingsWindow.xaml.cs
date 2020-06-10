@@ -30,6 +30,16 @@ namespace FileSpy.Windows
             Settings.UserName = UserBox.Text;
             Settings.PathToSave = PathLabel.Content as string;
             Settings.AutoRun = (bool)AutorunCheck.IsChecked;
+            if ((bool)AutorunCheck.IsChecked)
+            {
+                if (!IsStartupItem())
+                    SetAutorunValue(true, Environment.CurrentDirectory + "\\Updater.exe");
+            }
+            else
+            {
+                if (IsStartupItem())
+                    SetAutorunValue(false, Environment.CurrentDirectory + "\\Updater.exe");
+            }
             Settings.HiddenStart = (bool)HiddenCheck.IsChecked;
 
             Settings.Save();
@@ -56,28 +66,6 @@ namespace FileSpy.Windows
             var window = new FolderBrowserDialog();
             if (window.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 PathLabel.Content = window.SelectedPath;
-        }
-
-        private void AutorunCheck_Checked(object sender, RoutedEventArgs e)
-        {
-            if (!IsStartupItem())
-                SetAutorunValue(true, Environment.CurrentDirectory + "\\Updater.exe");
-        }
-
-        private void AutorunCheck_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (IsStartupItem())
-                SetAutorunValue(false, Environment.CurrentDirectory + "\\Updater.exe");
-        }
-
-        private void HiddenCheck_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void HiddenCheck_Unchecked(object sender, RoutedEventArgs e)
-        {
-
         }
 
         public bool SetAutorunValue(bool autorun, string path)

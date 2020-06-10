@@ -1,6 +1,7 @@
 ﻿using FileSpy.Classes;
 using FileSpy.Elements;
 using FileSpy.Windows;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -28,7 +29,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.1.2.1]";
+        string Version = "[0.1.2.4]";
         string Status = "Simple";
 
         NotifyIcon Icons;
@@ -52,6 +53,39 @@ namespace FileSpy
             ShowMaximized = 3,
             Show = 5
         }
+
+        public bool SetAutorunValue(bool autorun, string path)
+        {
+            RegistryKey reg;
+            reg = Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\");
+            try
+            {
+                if (autorun)
+                    reg.SetValue("FileSpy", path);
+                else
+                    reg.DeleteValue("FileSpy");
+
+                reg.Close();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private bool IsStartupItem()
+        {
+            // The path to the key where Windows looks for startup applications
+            RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+            if (rkApp.GetValue("FileSpy") == null)
+                // The value doesn't exist, the application is not set to run at startup
+                return false;
+            else
+                // The value exists, the application is set to run at startup
+                return true;
+        }
         #endregion
 
         public MainWindow()
@@ -62,6 +96,16 @@ namespace FileSpy
             Helper = new FlashWindowHelper(System.Windows.Application.Current);
 
             Settings = SettingsClass.Create();
+            if (Settings.AutoRun)
+            {
+                if (!IsStartupItem())
+                    SetAutorunValue(true, Environment.CurrentDirectory + "\\Updater.exe");
+            }
+            else
+            {
+                if (IsStartupItem())
+                    SetAutorunValue(false, Environment.CurrentDirectory + "\\Updater.exe");
+            }
             Users = new List<UserControll>();
             Setupers = new List<SetupWindow>();
             Getters = new List<GettingWindow>();
@@ -82,7 +126,6 @@ namespace FileSpy
 
         private void CloseButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //Task.Run(() => OpenAnim(false));
             this.Hide();
             if (Icon != null)
                 Icons.Dispose();
@@ -636,7 +679,6 @@ namespace FileSpy
                 var video = new VideoWindow(gid, id, name, Connection);
                 VideoWindows.Add(video);
                 video.CloseEvent += Video_CloseEvent;
-                video.Owner = this;
                 video.Show();
             }
 

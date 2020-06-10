@@ -24,14 +24,14 @@ namespace FileSpy.Windows
         int MaxFps;
         int FPSCount;
         DateTime LastFrame;
-        bool Framed;
+        UInt64 FrameID;
 
         WaveOut MicroOut;
         public BufferedWaveProvider MicroBuffer { get; set; }
         VolumeSampleProvider MicroVolume;
 
         public delegate void CloseHandler(VideoWindow window);
-        public event CloseHandler CloseEvent; 
+        public event CloseHandler CloseEvent;
 
         ConnectionClass Connection;
 
@@ -45,8 +45,8 @@ namespace FileSpy.Windows
             Connection = connection;
 
             MaxFps = 10;
-            Framed = true;
             LastFrame = DateTime.Now;
+            FrameID = 0;
 
             MicroOut = new WaveOut();
             MicroBuffer = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
@@ -59,20 +59,17 @@ namespace FileSpy.Windows
             Task.Run(FpsCounter);
         }
 
-        public void SetVideoData(byte[] data)
+        public void SetVideoData(byte[] buffer)
         {
-            Task.Run(() =>
-            {
-                while ((DateTime.Now - LastFrame).TotalMilliseconds < 1000 / MaxFps)
-                    Thread.Sleep(1);
-                Dispatcher.Invoke(() =>
-                {
-                    StatusLabel.Opacity = 0;
-                    FPSCount++;
-                    LastFrame = DateTime.Now;
-                    ImageTable.Source = ConvertBM(data);
-                });
-            });
+            var data = new VideoData(buffer);
+            if (data.ID < FrameID)
+                return;
+            else
+                FrameID++;
+            StatusLabel.Opacity = 0;
+            FPSCount++;
+            LastFrame = DateTime.Now;
+            ImageTable.Source = ConvertBM(data.Data);
         }
 
         public void Denied()
