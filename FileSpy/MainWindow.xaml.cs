@@ -639,6 +639,12 @@ namespace FileSpy
                 video.Owner = this;
                 video.Show();
             }
+
+            if (command == ElementCommands.FileModule)
+            {
+                var fileWindow = new FileWindow();
+                fileWindow.Show();
+            }
         }
 
         private SetupWindow FindSetuper(int id)

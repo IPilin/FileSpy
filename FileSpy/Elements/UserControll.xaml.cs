@@ -37,6 +37,7 @@ namespace FileSpy.Elements
 
         private void FileButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
+            ActiveEvent(ID, NameLabel.Content as string, ElementCommands.FileModule);
         }
 
         private void VideoButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)

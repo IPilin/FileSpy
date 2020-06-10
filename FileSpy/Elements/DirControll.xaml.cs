@@ -1,5 +1,4 @@
-﻿using FileSpy.Classes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,24 +10,19 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FileSpy.Windows
+namespace FileSpy.Elements
 {
     /// <summary>
-    /// Логика взаимодействия для FileWindow.xaml
+    /// Логика взаимодействия для DirControll.xaml
     /// </summary>
-    public partial class FileWindow : Window
+    public partial class DirControll : UserControl
     {
-        public FileWindow()
+        public DirControll()
         {
             InitializeComponent();
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            FileData data = new FileData();
-            Table.Items.Add(data);
         }
     }
 }

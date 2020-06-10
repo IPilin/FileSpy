@@ -5,8 +5,15 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileSpy.Windows"
         mc:Ignorable="d"
-        Title="File Window" Height="450" Width="800" FontFamily="/FileSpy;component/Resources/#Ubuntu">
+        Title="File Window" Height="450" Width="800" FontFamily="/FileSpy;component/Resources/#Ubuntu"
+        Loaded="Window_Loaded">
     <Grid>
-        <Line StrokeThickness="0.3" Stroke="Black" X1="0" Y1="20" X2="800" Y2="20"/>
+        <ListView x:Name="Table">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn DisplayMemberBinding="{Binding Path=ICO}" Header="Model"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
     </Grid>
 </Window>
