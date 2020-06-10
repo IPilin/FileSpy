@@ -4,16 +4,12 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileSpy.Windows"
+        xmlns:elements="clr-namespace:FileSpy.Elements"
         mc:Ignorable="d"
         Title="File Window" Height="450" Width="800" FontFamily="/FileSpy;component/Resources/#Ubuntu"
         Loaded="Window_Loaded">
     <Grid>
-        <ListView x:Name="Table">
-            <ListView.View>
-                <GridView>
-                    <GridViewColumn DisplayMemberBinding="{Binding Path=ICO}" Header="Model"/>
-                </GridView>
-            </ListView.View>
-        </ListView>
+        <ListBox x:Name="Table" Margin="5,5,5,5" HorizontalContentAlignment="Stretch">
+        </ListBox>
     </Grid>
 </Window>

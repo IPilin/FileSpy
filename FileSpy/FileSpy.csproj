@@ -109,13 +109,15 @@
     <Compile Include="Classes\Commands.cs" />
     <Compile Include="Classes\ConnectionClass.cs" />
     <Compile Include="Classes\ElementCommands.cs" />
-    <Compile Include="Classes\FileData.cs" />
     <Compile Include="Classes\FlashWindowHelper.cs" />
     <Compile Include="Classes\MessageClass.cs" />
     <Compile Include="Classes\SecuredClass.cs" />
     <Compile Include="Classes\SettingsClass.cs" />
     <Compile Include="Classes\VideoClass.cs" />
     <Compile Include="Classes\VideoData.cs" />
+    <Compile Include="Elements\DirectoryControll.xaml.cs">
+      <DependentUpon>DirectoryControll.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Elements\SwitchControl.xaml.cs">
       <DependentUpon>SwitchControl.xaml</DependentUpon>
     </Compile>
@@ -147,7 +149,7 @@
     <Compile Include="Windows\VideoWindow.xaml.cs">
       <DependentUpon>VideoWindow.xaml</DependentUpon>
     </Compile>
-    <Page Include="Elements\DirControll.xaml">
+    <Page Include="Elements\DirectoryControll.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

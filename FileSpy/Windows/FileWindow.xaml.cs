@@ -1,4 +1,5 @@
 ﻿using FileSpy.Classes;
+using FileSpy.Elements;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,8 +28,8 @@ namespace FileSpy.Windows
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            FileData data = new FileData();
-            Table.Items.Add(data);
+            DirectoryControll dir = new DirectoryControll();
+            Table.Items.Add(dir);
         }
     }
 }

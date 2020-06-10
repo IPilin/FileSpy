@@ -29,7 +29,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.1.2.4]";
+        string Version = "[0.2.0.0]";
         string Status = "Simple";
 
         NotifyIcon Icons;

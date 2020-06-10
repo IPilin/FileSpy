@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace FileSpy.Elements
 {
     /// <summary>
-    /// Логика взаимодействия для DirControll.xaml
+    /// Логика взаимодействия для DirectoryControll.xaml
     /// </summary>
-    public partial class DirControll : UserControl
+    public partial class DirectoryControll : UserControl
     {
-        public DirControll()
+        public DirectoryControll()
         {
             InitializeComponent();
         }
