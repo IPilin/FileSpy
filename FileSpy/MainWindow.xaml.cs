@@ -695,6 +695,11 @@ namespace FileSpy
                 FileClasses.Add(fileClass);
             }
 
+            if (message.Command == Commands.FileDenied)
+            {
+
+            }
+
             if (message.Command == Commands.FilePulsar)
             {
                 try
