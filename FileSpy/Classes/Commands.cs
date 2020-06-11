@@ -49,6 +49,12 @@
         public static int Info { get; private set; } = 32;
 
         public static int SetCursor { get; private set; } = 33;
-        //num = 34;
+
+        public static int RFileModule { get; private set; } = 35;
+        public static int HFileModule { get; private set; } = 36;
+        public static int FileDenied { get; private set; } = 37;
+        public static int CD { get; private set; } = 38;
+        public static int Dirs { get; private set; } = 39;
+        public static int FilePulsar { get; private set; } = 40;
     }
 }

