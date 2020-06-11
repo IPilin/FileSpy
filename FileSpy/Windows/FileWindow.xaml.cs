@@ -43,6 +43,10 @@ namespace FileSpy.Windows
             Connected = true;
 
             Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.RFileModule, ID));
+        }
+
+        public void Accept()
+        {
             Task.Run(Pulsar);
         }
 
@@ -137,6 +141,46 @@ namespace FileSpy.Windows
         {
             if (e.Key == Key.Enter)
                 Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.CD, ID, PathBox.Text));
+        }
+
+        private void RunButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DirectoryControll controll = Table.SelectedItem as DirectoryControll;
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.Run, ID, controll.FullName));
+            }
+            catch { }
+        }
+
+        private void RunWithButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DirectoryControll controll = Table.SelectedItem as DirectoryControll;
+
+                TextWindow textWindow = new TextWindow(false);
+                textWindow.Owner = this;
+                textWindow.ShowDialog();
+
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.RunWith, ID, controll.FullName + ";" + textWindow.TextBox.Text));
+            }
+            catch { }
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            CloseEvent(this);
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DirectoryControll controll = Table.SelectedItem as DirectoryControll;
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.Delete, ID, controll.FullName));
+            }
+            catch { }
         }
     }
 }

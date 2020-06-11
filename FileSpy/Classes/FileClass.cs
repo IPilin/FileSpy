@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http.Headers;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
@@ -30,6 +31,7 @@ namespace FileSpy.Classes
             LastTime = DateTime.Now;
             Connected = true;
             Task.Run(Brander);
+            Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.FileMAccepted, ID));
             Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.Dirs, ID, CD("<drives>")));
         }
 

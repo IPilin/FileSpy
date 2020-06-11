@@ -7,7 +7,7 @@
         xmlns:elements="clr-namespace:FileSpy.Elements"
         mc:Ignorable="d"
         Title="File Window" Height="450" Width="800" FontFamily="/FileSpy;component/Resources/#Ubuntu"
-        Loaded="Window_Loaded">
+        Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
         <Grid Height="35" VerticalAlignment="Top">
             <Label VerticalAlignment="Center" HorizontalAlignment="Left">Path</Label>
@@ -19,10 +19,10 @@
             <Label Margin="0,0,200,0" HorizontalAlignment="Right" VerticalAlignment="Center">Changing date</Label>
             <Label Margin="0,0,20,0" HorizontalAlignment="Right" VerticalAlignment="Center">Size</Label>
         </Grid>
-        <ListBox x:Name="Table" MouseDoubleClick="Table_MouseDoubleClick" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="5,55,5,5" HorizontalContentAlignment="Stretch">
+        <ListBox x:Name="Table" MouseDoubleClick="Table_MouseDoubleClick" VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.IsContainerVirtualizable="True" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Visible" Margin="5,55,5,5" HorizontalContentAlignment="Stretch">
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Run">
+                    <MenuItem x:Name="RunButton" Click="RunButton_Click" Header="Run">
                         <MenuItem.Icon>
                             <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
                                 <Rectangle Width="16" Height="16">
@@ -43,7 +43,7 @@
                             </Viewbox>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Run with">
+                    <MenuItem x:Name="RunWithButton" Click="RunWithButton_Click" Header="Run with">
                         <MenuItem.Icon>
                             <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
                                 <Rectangle Width="16" Height="16">
@@ -76,7 +76,7 @@
                         </MenuItem.Icon>
                     </MenuItem>
                     <Separator/>
-                    <MenuItem Header="Delete">
+                    <MenuItem x:Name="DeleteButton" Click="DeleteButton_Click" Header="Delete">
                         <MenuItem.Icon>
                             <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
                                 <Rectangle Width="16" Height="16">

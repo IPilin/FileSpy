@@ -52,9 +52,13 @@
 
         public static int RFileModule { get; private set; } = 35;
         public static int HFileModule { get; private set; } = 36;
-        public static int FileDenied { get; private set; } = 37;
-        public static int CD { get; private set; } = 38;
-        public static int Dirs { get; private set; } = 39;
-        public static int FilePulsar { get; private set; } = 40;
+        public static int FileMAccepted { get; private set; } = 37;
+        public static int FileMDenied { get; private set; } = 38;
+        public static int CD { get; private set; } = 39;
+        public static int Dirs { get; private set; } = 40;
+        public static int FilePulsar { get; private set; } = 41;
+        public static int Run { get; private set; } = 42;
+        public static int RunWith { get; private set; } = 43;
+        public static int Delete { get; private set; } = 44;
     }
 }

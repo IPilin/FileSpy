@@ -4,7 +4,9 @@ using FileSpy.Windows;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -161,7 +163,7 @@ namespace FileSpy
             {
                 if (e.Key == Key.K)
                 {
-                    var window = new TextWindow();
+                    var window = new TextWindow(true);
                     window.Owner = this;
                     window.ShowDialog();
                     Settings.SetKeyWord(window.PassBox.Password);
@@ -674,12 +676,13 @@ namespace FileSpy
                             fileClass.CloseEvent += (FileClass obj) =>
                             {
                                 FileClasses.Remove(obj);
+                                GC.Collect();
                             };
                             fileClass.Start();
                             FileClasses.Add(fileClass);
                         }
                         else
-                            Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.FileDenied, message.ElementID));
+                            Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.FileMDenied, message.ElementID));
                     });
                 });
             }
@@ -690,12 +693,22 @@ namespace FileSpy
                 fileClass.CloseEvent += (FileClass obj) =>
                 {
                     FileClasses.Remove(obj);
+                    GC.Collect();
                 };
                 fileClass.Start();
                 FileClasses.Add(fileClass);
             }
 
-            if (message.Command == Commands.FileDenied)
+            if (message.Command == Commands.FileMAccepted)
+            {
+                try
+                {
+                    FindFileWindow(message.ElementID).Accept();
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.FileMDenied)
             {
 
             }
@@ -729,6 +742,50 @@ namespace FileSpy
                     }
                     catch { }
                 });
+            }
+
+            if (message.Command == Commands.Run)
+            {
+                try
+                {
+                    if (FindFileClass(message.ElementID, message.Sender) == null) return;
+                    ProcessStartInfo startInfo = new ProcessStartInfo(message.GetStringPackage());
+                    startInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(message.GetStringPackage());
+                    Process.Start(startInfo);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.RunWith)
+            {
+                try
+                {
+                    if (FindFileClass(message.ElementID, message.Sender) == null) return;
+                    string[] com = message.GetStringPackage().Split(';');
+                    ProcessStartInfo startInfo = new ProcessStartInfo(com[0], com[1]);
+                    startInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(com[0]);
+                    Process.Start(startInfo);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.Delete)
+            {
+                try
+                {
+                    FileClass fileClass = FindFileClass(message.ElementID, message.Sender);
+                    if (fileClass == null) return;
+
+                    string path = message.GetStringPackage();
+                    if (Directory.Exists(path))
+                        Directory.Delete(path);
+                    else if (File.Exists(path))
+                        File.Delete(path);
+
+                    byte[] data = fileClass.CD(Path.GetDirectoryName(message.GetStringPackage()));
+                    Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.Dirs, message.ElementID, data));
+                }
+                catch { }
             }
             #endregion
         }
