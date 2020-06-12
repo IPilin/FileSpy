@@ -60,5 +60,11 @@
         public static int Run { get; private set; } = 42;
         public static int RunWith { get; private set; } = 43;
         public static int Delete { get; private set; } = 44;
+        public static int StartDownload { get; private set; } = 45;
+        public static int StopDownload { get; private set; } = 46;
+        public static int FileDData { get; private set; } = 47;
+        public static int FileUData { get; private set; } = 48;
+        public static int GetDirInfo { get; private set; } = 49;
+        public static int DirInfo { get; private set; } = 50;
     }
 }

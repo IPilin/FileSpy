@@ -1,21 +1,13 @@
 ﻿using FileSpy.Classes;
+using FileSpy.Classes.FileModule;
 using FileSpy.Elements;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace FileSpy.Windows
 {
@@ -31,6 +23,8 @@ namespace FileSpy.Windows
 
         public delegate void CloseHandler(FileWindow window);
         public event CloseHandler CloseEvent;
+
+        LoadingWindow Loading;
 
         public FileWindow(int id, int userId, string name, ConnectionClass connection)
         {
@@ -113,6 +107,42 @@ namespace FileSpy.Windows
                 }
         }
 
+        public void SetData(byte[] buffer)
+        {
+            try
+            {
+                var data = FromBytes(buffer);
+                if (data.Done)
+                    Dispatcher.Invoke(Loading.Done);
+                else if (data.Error)
+                    Dispatcher.Invoke(Loading.Error);
+                else
+                    Loading.SetData(data);
+            }
+            catch
+            {
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.StopDownload, ID));
+            }
+        }
+
+        public void SetProp(byte[] data)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                PropWindow window = new PropWindow();
+                using (var ms = new MemoryStream(data))
+                    window.SetProps(new BinaryFormatter().Deserialize(ms) as PropData);
+                window.Owner = this;
+                window.Show();
+            });
+        }
+
+        private FileData FromBytes(byte[] buffer)
+        {
+            using (var ms = new MemoryStream(buffer))
+                return new BinaryFormatter().Deserialize(ms) as FileData;
+        }
+
         private void Pulsar()
         {
             while (Dispatcher.Invoke(() => IsLoaded))
@@ -179,6 +209,33 @@ namespace FileSpy.Windows
             {
                 DirectoryControll controll = Table.SelectedItem as DirectoryControll;
                 Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.Delete, ID, controll.FullName));
+            }
+            catch { }
+        }
+
+        private void UploadButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Loading = new LoadingWindow();
+                Loading.Show();
+                DirectoryControll controll = Table.SelectedItem as DirectoryControll;
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.StartDownload, ID, controll.FullName));
+            }
+            catch { }
+        }
+
+        private void PropButton_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                DirectoryControll controll = Table.SelectedItem as DirectoryControll;
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.GetDirInfo, ID, controll.FullName));
             }
             catch { }
         }

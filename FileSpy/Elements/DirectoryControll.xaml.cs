@@ -21,7 +21,7 @@ namespace FileSpy.Elements
     /// </summary>
     public partial class DirectoryControll : UserControl
     {
-        public string FullName;
+        public string FullName { get; set; }
 
         public DirectoryControll(DriveInfo info)
         {
@@ -85,9 +85,10 @@ namespace FileSpy.Elements
         private string ToNormal(long size)
         {
             int k = 0;
-            for (; size > 1024; size /= 1024)
+            float fsize;
+            for (fsize = size; fsize > 1024; fsize /= 1024)
                 k++;
-            string result = size.ToString();
+            string result = fsize.ToString("0.0");
             switch (k)
             {
                 case 0:

@@ -1,5 +1,7 @@
-﻿using System;
+﻿using FileSpy.Classes.FileModule;
+using System;
 using System.IO;
+using System.IO.Compression;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
@@ -15,6 +17,7 @@ namespace FileSpy.Classes
         ConnectionClass Connection;
         DateTime LastTime;
         bool Connected;
+        bool Sending;
 
         public delegate void CloseHandler(FileClass fileClass);
         public event CloseHandler CloseEvent;
@@ -68,6 +71,57 @@ namespace FileSpy.Classes
         {
             Connected = false;
             CloseEvent(this);
+        }
+
+        public void StartDownload(string path)
+        {
+            Sending = true;
+            long id = 0;
+
+            if (Directory.Exists(path))
+            {
+                if (File.Exists("temp.zip")) File.Delete("temp.zip");
+                ZipFile.CreateFromDirectory(path, "temp.zip");
+                path = "temp.zip";
+            }
+
+            while (Connected && Sending)
+            {
+                FileData data = new FileData(path, ref id);
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.FileDData, ID, ToBytes(data)));
+                if (data.Done) Sending = false;
+            }
+
+            if (File.Exists("temp.zip"))
+                File.Delete("temp.zip");
+        }
+
+        public void StopDownload()
+        {
+            Sending = false;
+        }
+
+        public void GetDirInfo(string path)
+        {
+            PropData data;
+            if (Directory.Exists(path))
+                data = new PropData(new DirectoryInfo(path));
+            else
+                data = new PropData(new FileInfo(path));
+            using (var ms = new MemoryStream())
+            {
+                new BinaryFormatter().Serialize(ms, data);
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.DirInfo, ID, ms.ToArray()));
+            }
+        }
+
+        private byte[] ToBytes(FileData data)
+        {
+            using (var ms = new MemoryStream())
+            {
+                new BinaryFormatter().Serialize(ms, data);
+                return ms.ToArray();
+            }
         }
     }
 }
