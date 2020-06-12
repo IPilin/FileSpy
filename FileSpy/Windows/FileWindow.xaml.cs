@@ -68,12 +68,9 @@ namespace FileSpy.Windows
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            if (msg.Drives[i].IsReady)
-                            {
-                                DirectoryControll controll = new DirectoryControll(msg.Drives[i]);
-                                Table.Items.Add(controll);
-                            }
-    
+                            DirectoryControll controll = new DirectoryControll(msg.Drives[i]);
+                            Table.Items.Add(controll);
+
                         });
                     }
 
