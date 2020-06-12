@@ -1,6 +1,7 @@
 ﻿using FileSpy.Classes;
 using FileSpy.Classes.FileModule;
 using FileSpy.Elements;
+using Microsoft.Win32;
 using System;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -19,7 +20,7 @@ namespace FileSpy.Windows
         public int ID { get; set; }
         public int UserID { get; set; }
         ConnectionClass Connection;
-        bool Connected;
+        bool Sending;
 
         public delegate void CloseHandler(FileWindow window);
         public event CloseHandler CloseEvent;
@@ -34,7 +35,6 @@ namespace FileSpy.Windows
             UserID = userId;
             Title = name;
             Connection = connection;
-            Connected = true;
 
             Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.RFileModule, ID));
         }
@@ -134,6 +134,18 @@ namespace FileSpy.Windows
             });
         }
 
+        public void SetUError(string error)
+        {
+            if (Sending)
+            {
+                Sending = false;
+                Dispatcher.Invoke(() =>
+                {
+                    MessageBox.Show(error);
+                });
+            }
+        }
+
         private FileData FromBytes(byte[] buffer)
         {
             using (var ms = new MemoryStream(buffer))
@@ -212,7 +224,50 @@ namespace FileSpy.Windows
 
         private void UploadButton_Click(object sender, RoutedEventArgs e)
         {
+            Sending = true;
+            string path = PathBox.Text + "\\";
 
+            OpenFileDialog dialog = new OpenFileDialog();
+            dialog.ShowDialog();
+            Loading = new LoadingWindow();
+            Loading.Show();
+
+            Task.Run(() =>
+            {
+                long id = 0;
+                while (Dispatcher.Invoke(() => Loading.IsLoaded) && Sending)
+                {
+                    FileData data = new FileData(dialog.FileName, ref id);
+                    data.Path = path;
+                    if (data.Error)
+                    {
+                        Dispatcher.Invoke(() => MessageBox.Show(data.ErrorMessage));
+                        Sending = false;
+                        break;
+                    }
+                    if (data.Done)
+                    {
+                        Sending = false;
+                        if (Loading != null)
+                            Dispatcher.Invoke(Loading.Done);
+                    }
+                    else
+                    {
+                        if (Loading != null)
+                            Loading.GetData(data);
+                    }
+                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.FileUData, ID, ToBytes(data)));
+                }
+            });
+        }
+
+        private byte[] ToBytes(FileData data)
+        {
+            using (var ms = new MemoryStream())
+            {
+                new BinaryFormatter().Serialize(ms, data);
+                return ms.ToArray();
+            }
         }
 
         private void DownloadButton_Click(object sender, RoutedEventArgs e)

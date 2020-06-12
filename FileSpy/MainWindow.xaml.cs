@@ -34,7 +34,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.2.0.0]";
+        string Version = "[0.2.2.0]";
         string Status = "Simple";
         DateTime TurnOnTime = DateTime.Now;
 
@@ -801,6 +801,24 @@ namespace FileSpy
                 try
                 {
                     FindFileClass(message.ElementID, message.Sender).StopDownload();
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.FileUData)
+            {
+                try
+                {
+                    FindFileClass(message.ElementID, message.Sender).SetData(message.Package);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.FileUError)
+            {
+                try
+                {
+                    FindFileWindow(message.ElementID).SetUError(message.GetStringPackage());
                 }
                 catch { }
             }

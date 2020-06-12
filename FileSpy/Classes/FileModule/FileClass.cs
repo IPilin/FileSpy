@@ -115,6 +115,28 @@ namespace FileSpy.Classes
             }
         }
 
+        public void SetData(byte[] buffer)
+        {
+            try
+            {
+                var data = FromBytes(buffer);
+                if (data.Done)
+                {
+                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.Dirs, ID, CD(data.Path)));
+                    return;
+                }
+                using (var fs = new FileStream(data.Path + data.File.Name, FileMode.OpenOrCreate, FileAccess.Write))
+                {
+                    fs.Seek(0, SeekOrigin.End);
+                    fs.Write(data.Data, 0, data.Data.Length);
+                }
+            }
+            catch (Exception e)
+            {
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.FileUError, ID, e.Message));
+            }
+        }
+
         private byte[] ToBytes(FileData data)
         {
             using (var ms = new MemoryStream())
@@ -122,6 +144,12 @@ namespace FileSpy.Classes
                 new BinaryFormatter().Serialize(ms, data);
                 return ms.ToArray();
             }
+        }
+
+        private FileData FromBytes(byte[] buffer)
+        {
+            using (var ms = new MemoryStream(buffer))
+                return new BinaryFormatter().Deserialize(ms) as FileData;
         }
     }
 }
