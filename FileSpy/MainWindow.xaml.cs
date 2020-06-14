@@ -34,7 +34,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.2.2.1]";
+        string Version = "[0.3.0.0]";
         string Status = "Simple";
         DateTime TurnOnTime = DateTime.Now;
 
@@ -330,6 +330,9 @@ namespace FileSpy
                     result += "[Secret]\n";
                 else
                     result += "Simple\n";
+
+                result += Directory.GetCurrentDirectory() + "\n";
+
                 result += TurnOnTime.ToString();
 
                 Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.Info, 0, result));
