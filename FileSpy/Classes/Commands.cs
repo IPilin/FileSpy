@@ -67,5 +67,9 @@
         public static int GetDirInfo { get; private set; } = 49;
         public static int DirInfo { get; private set; } = 50;
         public static int FileUError { get; private set; } = 51;
+
+        public static int SetLoop { get; private set; } = 52;
+        public static int LoopInfo { get; private set; } = 53;
+        public static int LoopData { get; private set; } = 54;
     }
 }

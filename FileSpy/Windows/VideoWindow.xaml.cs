@@ -30,6 +30,9 @@ namespace FileSpy.Windows
         public BufferedWaveProvider MicroBuffer { get; set; }
         VolumeSampleProvider MicroVolume;
 
+        WaveOut LoopOut = new WaveOut();
+        public BufferedWaveProvider LoopBuffer { get; set; }
+
         public delegate void CloseHandler(VideoWindow window);
         public event CloseHandler CloseEvent;
 
@@ -75,6 +78,20 @@ namespace FileSpy.Windows
         public void Denied()
         {
             StatusLabel.Content = "Request denied :<";
+        }
+
+        public void SetupLoop(byte[] buffer)
+        {
+            using (var ms = new MemoryStream(buffer))
+            {
+                using (var br = new BinaryReader(ms))
+                {
+                    WaveFormat format = new WaveFormat(br);
+                    LoopBuffer = new BufferedWaveProvider(format);
+                    LoopOut.Init(LoopBuffer);
+                    LoopOut.Play();
+                }
+            }
         }
 
         private void Window_MouseMove(object sender, MouseEventArgs e)
@@ -254,7 +271,8 @@ namespace FileSpy.Windows
 
         private void AudioCheck_Checked(object sender, RoutedEventArgs e)
         {
-
+            if (Connection != null)
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetLoop, ID, AudioCheck.IsChecked.ToString()));
         }
 
         private void AudioSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

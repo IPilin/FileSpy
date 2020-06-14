@@ -638,6 +638,37 @@ namespace FileSpy
                 }
                 catch { }
             }
+
+            if (message.Command == Commands.SetLoop)
+            {
+                try
+                {
+                    if (message.GetStringPackage() == "True")
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).LoopStream = true);
+                    else
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).LoopStream = false);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.LoopInfo)
+            {
+                try
+                {
+                    FindVideoWindow(message.ElementID).SetupLoop(message.Package);
+                }
+                catch { }
+            }
+
+
+            if (message.Command == Commands.LoopData)
+            {
+                try
+                {
+                    FindVideoWindow(message.ElementID).LoopBuffer.AddSamples(message.Package, 0, message.Package.Length);
+                }
+                catch { }
+            }
             #endregion
 
             #region FileMCommands
