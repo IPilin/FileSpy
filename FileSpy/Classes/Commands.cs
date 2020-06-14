@@ -66,5 +66,6 @@
         public static int FileUData { get; private set; } = 48;
         public static int GetDirInfo { get; private set; } = 49;
         public static int DirInfo { get; private set; } = 50;
+        public static int FileUError { get; private set; } = 51;
     }
 }

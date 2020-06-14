@@ -53,6 +53,21 @@ namespace FileSpy.Windows
             }
         }
 
+        public void GetData(FileData data)
+        {
+            Downloaded += data.Data.Length;
+            Dispatcher.Invoke(() => FileNameLabel.Content = data.File.Name);
+            Dispatcher.Invoke(() => CountLabel.Content = ToNormal(Downloaded) + "/" + ToNormal(data.Size));
+            Dispatcher.Invoke(() => ProgressBar.Maximum = data.Size);
+            Dispatcher.Invoke(() => ProgressBar.Value = Downloaded);
+            if ((DateTime.Now - LastTime).TotalSeconds >= 1)
+            {
+                Dispatcher.Invoke(() => StatusLabel.Content = ((ProgressBar.Value - LastSize) / (DateTime.Now - LastTime).TotalSeconds / 1024 / 1024).ToString("0.00") + "MB/s");
+                LastTime = DateTime.Now;
+                Dispatcher.Invoke(() => LastSize = (long)ProgressBar.Value);
+            }
+        }
+
         public void Error()
         {
             StatusLabel.Content = "Error!";

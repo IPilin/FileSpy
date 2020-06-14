@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using static FileSpy.Classes.DirMessage;
 
 namespace FileSpy.Elements
 {
@@ -23,7 +24,7 @@ namespace FileSpy.Elements
     {
         public string FullName { get; set; }
 
-        public DirectoryControll(DriveInfo info)
+        public DirectoryControll(DriveI info)
         {
             InitializeComponent();
 
@@ -41,7 +42,7 @@ namespace FileSpy.Elements
             SizeLabel.Content = ToNormal(info.TotalSize) + " (" + ToNormal(info.AvailableFreeSpace) + " free)";
         }
 
-        public DirectoryControll(DirectoryInfo info)
+        public DirectoryControll(DirectoryI info)
         {
             InitializeComponent();
 
@@ -54,7 +55,7 @@ namespace FileSpy.Elements
             NameLabel.Content = info.Name;
         }
 
-        public DirectoryControll(FileInfo info)
+        public DirectoryControll(FileI info)
         {
             InitializeComponent();
 

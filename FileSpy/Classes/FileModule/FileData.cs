@@ -7,10 +7,12 @@ namespace FileSpy.Classes.FileModule
     public class FileData
     {
         public FileInfo File { get; set; }
+        public string Path { get; set; }
         public long Size { get; set; }
         public byte[] Data { get; set; }
         public bool Done { get; set; }
         public bool Error { get; set; }
+        public string ErrorMessage { get; set; }
 
         public FileData(string path, ref long id)
         {
@@ -45,9 +47,10 @@ namespace FileSpy.Classes.FileModule
                     }
                 }
             }
-            catch 
+            catch (Exception e)
             {
                 Error = true;
+                ErrorMessage = e.Message;
             }
         }
     }
