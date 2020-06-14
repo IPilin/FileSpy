@@ -1,5 +1,6 @@
 ﻿using NAudio.CoreAudioApi;
 using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -31,8 +32,8 @@ namespace FileSpy.Classes
         public bool Cursor { get; set; }
 
         public WaveInEvent MicroInput { get; set; }
-        public bool AudioStream { get; set; }
-        public bool LoopStream { get; set; }
+
+        public WasapiLoopbackCapture LoopInput { get; set; }
 
         public delegate void CloseHandler(VideoClass videoClass);
         public event CloseHandler CloseEvent;
@@ -56,29 +57,54 @@ namespace FileSpy.Classes
             MicroInput.WaveFormat = new WaveFormat(8000, 16, 1);
             MicroInput.DataAvailable += MicroInput_DataAvailable;
 
-            var recorder = new WasapiLoopbackCapture();
-            recorder.DataAvailable += Recorder_DataAvailable;
+            LoopInput = new WasapiLoopbackCapture();
+            LoopInput.DataAvailable += Recorder_DataAvailable;
             using (var ms = new MemoryStream())
             {
                 using (var bw = new BinaryWriter(ms))
                 {
-                    recorder.WaveFormat.Serialize(bw);
+                    LoopInput.WaveFormat.Serialize(bw);
+                    //new WaveFormat(44100, 2).Serialize(bw);
                     Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopInfo, ID, ms.ToArray()));
                 }
             }
-
-            recorder.StartRecording();
         }
 
         private void Recorder_DataAvailable(object sender, WaveInEventArgs e)
         {
-            if (LoopStream)
+            /*
+            byte[] newArray16Bit = new byte[e.BytesRecorded / 2];
+            short two;
+            float value;
+            for (int i = 0, j = 0; i < e.BytesRecorded; i += 4, j += 2)
             {
-                using (var ms = new MemoryStream())
+                value = (BitConverter.ToSingle(e.Buffer, i));
+                two = (short)(value * short.MaxValue);
+                newArray16Bit[j] = (byte)(two & 0xFF);
+                newArray16Bit[j + 1] = (byte)((two >> 8) & 0xFF);
+            }
+            
+            Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopData, ID, newArray16Bit));
+            */
+
+            using (var ms = new MemoryStream())
+            {
+                ms.Write(e.Buffer, 0, e.BytesRecorded);
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopData, ID, ms.ToArray()));
+            }
+        }
+
+        private byte[] readStream(IWaveProvider waveStream, int length)
+        {
+            byte[] buffer = new byte[length];
+            using (var stream = new MemoryStream())
+            {
+                int read;
+                while ((read = waveStream.Read(buffer, 0, length)) > 0)
                 {
-                    ms.Write(e.Buffer, 0, e.BytesRecorded);
-                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopData, ID, ms.ToArray()));
+                    stream.Write(buffer, 0, read);
                 }
+                return stream.ToArray();
             }
         }
 
@@ -155,6 +181,7 @@ namespace FileSpy.Classes
             {
                 Connected = false;
                 MicroInput.StopRecording();
+                LoopInput.StopRecording();
                 CloseEvent(this);
             }
         }

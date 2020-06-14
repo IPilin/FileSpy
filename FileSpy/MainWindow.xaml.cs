@@ -644,9 +644,9 @@ namespace FileSpy
                 try
                 {
                     if (message.GetStringPackage() == "True")
-                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).LoopStream = true);
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).LoopInput.StartRecording());
                     else
-                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).LoopStream = false);
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).LoopInput.StopRecording());
                 }
                 catch { }
             }
