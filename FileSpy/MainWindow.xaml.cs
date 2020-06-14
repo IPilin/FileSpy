@@ -34,7 +34,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.3.0.0]";
+        string Version = "[0.3.1.0]";
         string Status = "Simple";
         DateTime TurnOnTime = DateTime.Now;
 
@@ -658,7 +658,7 @@ namespace FileSpy
             {
                 try
                 {
-                    FindVideoWindow(message.ElementID).SetupLoop(message.Package);
+                    Dispatcher.Invoke(() => FindVideoWindow(message.ElementID).SetupLoop(message.Package));
                 }
                 catch { }
             }
@@ -668,7 +668,7 @@ namespace FileSpy
             {
                 try
                 {
-                    FindVideoWindow(message.ElementID).LoopBuffer.AddSamples(message.Package, 0, message.Package.Length);
+                    Dispatcher.Invoke(() => FindVideoWindow(message.ElementID).LoopBuffer.AddSamples(message.Package, 0, message.Package.Length));
                 }
                 catch { }
             }

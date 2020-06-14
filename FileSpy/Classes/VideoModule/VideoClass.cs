@@ -63,8 +63,8 @@ namespace FileSpy.Classes
             {
                 using (var bw = new BinaryWriter(ms))
                 {
-                    LoopInput.WaveFormat.Serialize(bw);
-                    //new WaveFormat(44100, 2).Serialize(bw);
+                    //LoopInput.WaveFormat.Serialize(bw);
+                    new WaveFormat(16000, 16, LoopInput.WaveFormat.Channels).Serialize(bw);
                     Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopInfo, ID, ms.ToArray()));
                 }
             }
@@ -72,26 +72,23 @@ namespace FileSpy.Classes
 
         private void Recorder_DataAvailable(object sender, WaveInEventArgs e)
         {
-            /*
-            byte[] newArray16Bit = new byte[e.BytesRecorded / 2];
-            short two;
-            float value;
-            for (int i = 0, j = 0; i < e.BytesRecorded; i += 4, j += 2)
+            try
             {
-                value = (BitConverter.ToSingle(e.Buffer, i));
-                two = (short)(value * short.MaxValue);
-                newArray16Bit[j] = (byte)(two & 0xFF);
-                newArray16Bit[j + 1] = (byte)((two >> 8) & 0xFF);
+                byte[] result;
+                using (var ms = new MemoryStream())
+                {
+                    ms.Write(e.Buffer, 0, e.BytesRecorded);
+                    ms.Seek(0, SeekOrigin.Begin);
+                    using (var inputStream = new RawSourceWaveStream(ms, LoopInput.WaveFormat))
+                    {
+                        var sampleStream = new WaveToSampleProvider(inputStream);
+                        var resample = new WdlResamplingSampleProvider(sampleStream, 16000);
+                        result = readStream(resample.ToWaveProvider16(), e.BytesRecorded);
+                    }
+                }
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopData, ID, result));
             }
-            
-            Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopData, ID, newArray16Bit));
-            */
-
-            using (var ms = new MemoryStream())
-            {
-                ms.Write(e.Buffer, 0, e.BytesRecorded);
-                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopData, ID, ms.ToArray()));
-            }
+            catch { }
         }
 
         private byte[] readStream(IWaveProvider waveStream, int length)

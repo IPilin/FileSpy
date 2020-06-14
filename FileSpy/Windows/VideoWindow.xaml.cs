@@ -30,8 +30,9 @@ namespace FileSpy.Windows
         public BufferedWaveProvider MicroBuffer { get; set; }
         VolumeSampleProvider MicroVolume;
 
-        WaveOut LoopOut = new WaveOut();
+        WasapiOut LoopOut = new WasapiOut();
         public BufferedWaveProvider LoopBuffer { get; set; }
+        VolumeSampleProvider LoopVolume;
 
         public delegate void CloseHandler(VideoWindow window);
         public event CloseHandler CloseEvent;
@@ -88,7 +89,8 @@ namespace FileSpy.Windows
                 {
                     WaveFormat format = new WaveFormat(br);
                     LoopBuffer = new BufferedWaveProvider(format);
-                    LoopOut.Init(LoopBuffer);
+                    LoopVolume = new VolumeSampleProvider(LoopBuffer.ToSampleProvider());
+                    LoopOut.Init(LoopVolume);
                     LoopOut.Play();
                 }
             }
@@ -277,7 +279,8 @@ namespace FileSpy.Windows
 
         private void AudioSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-
+            if (LoopVolume != null)
+                LoopVolume.Volume = (float)AudioSlider.Value;
         }
 
         private void FpsVisibleCheck_Checked(object sender, RoutedEventArgs e)
