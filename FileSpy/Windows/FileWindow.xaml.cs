@@ -12,7 +12,7 @@ using System.Windows.Input;
 namespace FileSpy.Windows
 {
     /// <summary>
-    /// Логика взаимодействия для FileWindow.xaml
+    /// Logic for FileWindow.xaml
     /// </summary>
     public partial class FileWindow : Window
     {
