@@ -75,9 +75,17 @@ namespace FileSpy.Classes
                 {
                     Path = "";
                     var drives = DriveInfo.GetDrives();
-                    Drives = new DriveI[drives.Length];
-                    for (int i = 0; i < Drives.Length; i++)
-                        Drives[i] = new DriveI(drives[i]);
+                    int count = 0;
+                    for (int i = 0; i < drives.Length; i++)
+                        if (drives[i].IsReady)
+                            count++;
+                    Drives = new DriveI[count];
+                    for (int i = 0, id = 0; i < Drives.Length; i++)
+                        if (drives[i].IsReady)
+                        {
+                            Drives[id] = new DriveI(drives[i]);
+                            id++;
+                        }
                     return;
                 }
 

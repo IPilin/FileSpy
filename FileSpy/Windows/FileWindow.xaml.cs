@@ -70,7 +70,6 @@ namespace FileSpy.Windows
                         {
                             DirectoryControll controll = new DirectoryControll(msg.Drives[i]);
                             Table.Items.Add(controll);
-
                         });
                     }
 
