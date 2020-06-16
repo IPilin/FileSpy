@@ -133,7 +133,14 @@ namespace FileSpy.Classes
                     {
                         LastFPS = DateTime.Now;
 
-                        Thread screen = new Thread(() => Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor, FrameID - 1))));
+                        Thread screen = new Thread(() =>
+                        {
+                            try
+                            {
+                                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor, FrameID - 1)));
+                            }
+                            catch { }                        
+                        });
                         FrameID++;
                         screen.Start();
 
