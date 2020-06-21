@@ -83,8 +83,12 @@
         <Label x:Name="NameLabel" Margin="0,-2,0,0" Foreground="#E3E3E5" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">File Spy</Label>
         <Border x:Name="Table" Margin="0,30,0,0" CornerRadius="10" Background="#FFFEFF">
             <Grid>
-                <Grid Height="60" VerticalAlignment="Top">
-                    <elements:SwitchControl x:Name="SilenceControll" Margin="10,0,0,0" HorizontalAlignment="Left"/>
+                <Grid Height="50" VerticalAlignment="Top">
+                    <Line Opacity="0.5" X1="10" X2="480" Y1="50" Y2="50" StrokeThickness="1" Stroke="#6a6d70"/>
+                    <Grid Margin="10,10,0,0" Width="100" HorizontalAlignment="Left">
+                        <elements:SwitchControl x:Name="SilenceControll" HorizontalAlignment="Center"/>
+                        <Line Opacity="0.5" X1="100" X2="100" Y1="0" Y2="50" StrokeThickness="1" Stroke="#6a6d70"/>
+                    </Grid>
                     <Border x:Name="SettingsButton" Cursor="Hand" MouseLeftButtonUp="SettingsButton_MouseLeftButtonUp"  Margin="0,0,10,0" HorizontalAlignment="Right" Height="30" Width="80" CornerRadius="15">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
