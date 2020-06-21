@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:FileSpy"
         xmlns:elements="clr-namespace:FileSpy.Elements"
         mc:Ignorable="d"
-        Title="FileSpy" Height="300" Width="510" WindowStyle="None" Background="Transparent" AllowsTransparency="True" 
+        Title="FileSpy" Height="330" Width="510" WindowStyle="None" Background="Transparent" AllowsTransparency="True" 
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         Loaded="Window_Loaded" KeyUp="Window_KeyUp" StateChanged="Window_StateChanged" Closing="Window_Closing">
     <Window.Resources>
@@ -51,6 +51,33 @@
             </Setter>
         </Style>
 
+        <LinearGradientBrush x:Key="StandartBlue" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#579EE1" Offset="0"/>
+            <GradientStop Color="#127FE8" Offset="0.5"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="BorderStyle" TargetType="{x:Type Border}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource StandartBlue}"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Background" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LabelStyle" TargetType="{x:Type Label}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=SettingsButton, Path=IsMouseOver}" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=SettingsButton, Path=IsMouseOver}" Value="False">
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
     </Window.Resources>
     <Window.Effect>
         <DropShadowEffect Color="Gray" BlurRadius="10" Opacity="0.5" Direction="-90" RenderingBias="Quality" ShadowDepth="4"/>
@@ -83,26 +110,27 @@
         <Label x:Name="NameLabel" Margin="0,-2,0,0" Foreground="#E3E3E5" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">File Spy</Label>
         <Border x:Name="Table" Margin="0,30,0,0" CornerRadius="10" Background="#FFFEFF">
             <Grid>
-                <Grid Height="50" VerticalAlignment="Top">
-                    <Line Opacity="0.5" X1="10" X2="480" Y1="50" Y2="50" StrokeThickness="1" Stroke="#6a6d70"/>
-                    <Grid Margin="10,10,0,0" Width="100" HorizontalAlignment="Left">
-                        <elements:SwitchControl x:Name="SilenceControll" HorizontalAlignment="Center"/>
-                        <Line Opacity="0.5" X1="100" X2="100" Y1="0" Y2="50" StrokeThickness="1" Stroke="#6a6d70"/>
-                    </Grid>
-                    <Border x:Name="SettingsButton" Cursor="Hand" MouseLeftButtonUp="SettingsButton_MouseLeftButtonUp"  Margin="0,0,10,0" HorizontalAlignment="Right" Height="30" Width="80" CornerRadius="15">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                <GradientStop Color="#579EE1" Offset="0"/>
-                                <GradientStop Color="#127FE8" Offset="0.5"/>
+                <Grid Height="60" VerticalAlignment="Top">
+                    <Line X1="0" X2="{Binding ElementName=Table, Path=ActualWidth}" Y1="60" Y2="60">
+                        <Line.Stroke>
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,0">
+                                <GradientStop Color="#006a6d70" Offset="0"/>
+                                <GradientStop Color="#506a6d70" Offset="0.5"/>
+                                <GradientStop Color="#006a6d70" Offset="1"/>
                             </LinearGradientBrush>
-                        </Border.Background>
+                        </Line.Stroke>
+                    </Line>
+                    <Border BorderThickness="0" BorderBrush="#366a6d70" CornerRadius="10,0,10,0" Margin="10,10,0,0" Width="80" HorizontalAlignment="Left">
+                        <elements:SwitchControl x:Name="SilenceControll" HorizontalAlignment="Center"/>
+                    </Border>
+                    <Border x:Name="SettingsButton" MouseLeftButtonUp="SettingsButton_MouseLeftButtonUp" Style="{StaticResource BorderStyle}" Cursor="Hand" BorderThickness="1" BorderBrush="#366a6d70" CornerRadius="15" Margin="0,10,10,0" Width="80" Height="30" HorizontalAlignment="Right">
                         <Border.Effect>
-                            <DropShadowEffect BlurRadius="4" Opacity="0.25" ShadowDepth="2"/>
+                            <DropShadowEffect BlurRadius="4" ShadowDepth="2" Opacity="0.25"/>
                         </Border.Effect>
-                        <Label FontSize="14" FontFamily="./Resources/#Ubuntu" Foreground="#FFFEFF" VerticalAlignment="Center" HorizontalAlignment="Center">Settings</Label>
+                        <Label Style="{StaticResource LabelStyle}" FontSize="14" FontFamily="./Resources/#Ubuntu" VerticalAlignment="Center" HorizontalAlignment="Center">Settings</Label>
                     </Border>
                 </Grid>
-                <Grid Margin="0,60,0,20">
+                <Grid Margin="0,70,0,20">
                     <ListBox x:Name="FullTable" Margin="5,0,5,0" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single" Style="{DynamicResource ListBoxStyle1}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ListBoxItem}">

@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileSpy.Windows"
         mc:Ignorable="d"
-        Title="SettingsWindow" Height="300" Width="500" WindowStartupLocation="CenterOwner"
+        Title="SettingsWindow" Height="330" Width="500" WindowStartupLocation="CenterOwner"
         WindowStyle="None" Background="Transparent" AllowsTransparency="True" ShowInTaskbar="False">
-    <Border Height="250" Margin="5,35,5,5" CornerRadius="10" Background="#FFFEFF">
+    <Border Height="280" Margin="5,35,5,5" CornerRadius="10" Background="#FFFEFF">
         <Grid VerticalAlignment="Center">
             <Grid Margin="0,0,0,0" Height="40" VerticalAlignment="Top">
                 <Rectangle Fill="#FFFEFF" Margin="10,5,10,5" RadiusX="10" RadiusY="10">
