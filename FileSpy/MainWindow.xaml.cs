@@ -34,7 +34,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.3.2.0]";
+        string Version = "[0.3.4.0]";
         string Status = "Simple";
         DateTime TurnOnTime = DateTime.Now;
 
@@ -669,6 +669,24 @@ namespace FileSpy
                 try
                 {
                     Dispatcher.Invoke(() => FindVideoWindow(message.ElementID).LoopBuffer.AddSamples(message.Package, 0, message.Package.Length));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.WaveInCount)
+            {
+                try
+                {
+                    Dispatcher.Invoke(() => FindVideoWindow(message.ElementID).SetWaveIn(Convert.ToInt32(message.GetStringPackage())));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.SetWaveDevice)
+            {
+                try
+                {
+                    FindVideoClasses(message.ElementID, message.Sender).SetDevice(Convert.ToInt32(message.GetStringPackage()));
                 }
                 catch { }
             }

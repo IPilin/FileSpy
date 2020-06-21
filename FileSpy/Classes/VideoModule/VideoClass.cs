@@ -57,6 +57,8 @@ namespace FileSpy.Classes
             MicroInput.WaveFormat = new WaveFormat(8000, 16, 1);
             MicroInput.DataAvailable += MicroInput_DataAvailable;
 
+            Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.WaveInCount, ID, WaveIn.DeviceCount.ToString()));
+
             LoopInput = new WasapiLoopbackCapture();
             LoopInput.DataAvailable += Recorder_DataAvailable;
             using (var ms = new MemoryStream())
@@ -68,6 +70,11 @@ namespace FileSpy.Classes
                     Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopInfo, ID, ms.ToArray()));
                 }
             }
+        }
+
+        public void SetDevice(int count)
+        {
+            MicroInput.DeviceNumber = count;
         }
 
         private void Recorder_DataAvailable(object sender, WaveInEventArgs e)

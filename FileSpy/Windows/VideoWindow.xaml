@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="VideoWindow" Height="450" Width="800" MouseMove="Window_MouseMove" MouseLeave="Window_MouseLeave"
         WindowStartupLocation="CenterOwner" FontFamily="/FileSpy;component/Resources/#Ubuntu" Loaded="Window_Loaded" Closed="Window_Closed" ShowInTaskbar="True"
-        KeyUp="Window_KeyUp">
+        KeyUp="Window_KeyUp" MouseLeftButtonUp="Window_MouseLeftButtonUp">
     <Window.Resources>
 
         <Style x:Key="SliderRepeatButton" TargetType="{x:Type RepeatButton}">
@@ -189,7 +189,7 @@
     </Window.Resources>
 
     <Grid>
-        <Image x:Name="ImageTable"/>
+        <Image x:Name="ImageTable" Focusable="True"/>
         <Label x:Name="FPSLabel" Opacity="0" FontSize="16" Content="0FPS">
             <Label.Effect>
                 <DropShadowEffect ShadowDepth="0" BlurRadius="5" Color="#FFFFFF" />
@@ -207,14 +207,6 @@
                     <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
                         <GradientStop Color="#00000000" Offset="0"/>
                         <GradientStop Color="Black" Offset="1.2"/>
-                    </LinearGradientBrush>
-                </Grid.Background>
-            </Grid>
-            <Grid Height="50" VerticalAlignment="Top">
-                <Grid.Background>
-                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                        <GradientStop Color="#000000" Offset="-0.2"/>
-                        <GradientStop Color="#00000000" Offset="1"/>
                     </LinearGradientBrush>
                 </Grid.Background>
             </Grid>
@@ -283,7 +275,7 @@
                             <TextBlock>25</TextBlock>
                         </ComboBox>
                     </Grid>
-                    <TextBox x:Name="MaxFpsBox" Focusable="False" KeyUp="MaxFpsBox_KeyUp" Width="30" Foreground="White" BorderBrush="White" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Left">10</TextBox>
+                    <TextBox x:Name="MaxFpsBox" FontSize="16" Focusable="True" KeyUp="MaxFpsBox_KeyUp" Width="30" Foreground="White" BorderBrush="White" Background="Transparent" VerticalAlignment="Center" HorizontalAlignment="Left">10</TextBox>
                     <Grid Cursor="Hand" HorizontalAlignment="Left" Margin="400,0,0,0">
                         <Grid x:Name="MicroButton" MouseLeftButtonUp="MicroButton_MouseLeftButtonUp" Opacity="0.5" MouseEnter="MicroGrid_MouseEnter" Margin="50,5,0,0" Height="25" VerticalAlignment="Center" HorizontalAlignment="Left">
                             <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
@@ -308,10 +300,11 @@
                                     </Canvas>
                                 </Canvas>
                             </Viewbox>
-                            <Popup x:Name="MicroPopup" MouseLeave="MicroGrid_MouseLeave" Placement="Top" HorizontalOffset="0" VerticalOffset="-3" AllowsTransparency="True" StaysOpen="True">
-                                <Border Height="100" Width="25" Background="#3F000000" CornerRadius="5">
+                            <Popup x:Name="MicroPopup" MouseLeave="MicroGrid_MouseLeave" Placement="Top" HorizontalOffset="-12" VerticalOffset="-3" AllowsTransparency="True" StaysOpen="True">
+                                <Border Height="100" Width="50" Background="#3F000000" CornerRadius="5">
                                     <Grid Margin="0,2,0,2">
-                                        <Slider x:Name="MicroSlider" MouseDoubleClick="MicroSlider_MouseDoubleClick" ValueChanged="Slider_ValueChanged" Value="1" Maximum="2" Template="{DynamicResource Slider}"></Slider>
+                                        <Slider x:Name="MicroDevice" Margin="5,0,0,0" ValueChanged="MicroDevice_ValueChanged" TickFrequency="1" IsSnapToTickEnabled="True" Template="{DynamicResource Slider}" HorizontalAlignment="Left"></Slider>
+                                        <Slider x:Name="MicroSlider" Margin="0,0,5,0" MouseDoubleClick="MicroSlider_MouseDoubleClick" ValueChanged="Slider_ValueChanged" Value="1" Maximum="2" Template="{DynamicResource Slider}" HorizontalAlignment="Right"></Slider>
                                     </Grid>
                                 </Border>
                             </Popup>

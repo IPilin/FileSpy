@@ -5,6 +5,7 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -105,6 +106,15 @@ namespace FileSpy.Windows
             }
         }
 
+        public void SetWaveIn(int count)
+        {
+            try
+            {
+                MicroDevice.Maximum = count;
+            }
+            catch { }
+        }
+
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
             LastMove = DateTime.Now;
@@ -135,20 +145,23 @@ namespace FileSpy.Windows
         {
             while (Dispatcher.Invoke(() => IsLoaded))
             {
-                if ((DateTime.Now - LastMove).TotalSeconds < 3)
+                Dispatcher.Invoke(() =>
                 {
-                    if (Dispatcher.Invoke(() => UIGrid.Opacity != 1))
-                        Dispatcher.Invoke(() => UIGrid.Opacity = 1);
-                }
-                else
-                {
-                    Dispatcher.Invoke(() =>
+                    if ((DateTime.Now - LastMove).TotalSeconds < 3)
+                    {
+                        if (UIGrid.Opacity != 1)
+                            UIGrid.Opacity = 1;
+                    }
+                    else
                     {
                         System.Windows.Point mouse = Mouse.GetPosition(this);
                         if (UIGrid.Opacity != 0 && mouse.Y < ActualHeight - 150)
+                        {
                             UIGrid.Opacity = 0;
-                    });
-                }
+                            Keyboard.Focus(ImageTable);
+                        }
+                    }
+                });
 
                 Thread.Sleep(100);
             }
@@ -160,21 +173,25 @@ namespace FileSpy.Windows
             {
                 Dispatcher.Invoke(() =>
                 {
-                    FPSLabel.Content = FPSCount.ToString() + "FPS";
-                    if (FPSCount == 0)
+                    try
                     {
-                        WarningCircle.Fill = System.Windows.Media.Brushes.Red;
-                        WarningCircle.Opacity = 1;
+                        FPSLabel.Content = FPSCount.ToString() + "FPS";
+                        if (FPSCount == 0)
+                        {
+                            WarningCircle.Fill = System.Windows.Media.Brushes.Red;
+                            WarningCircle.Opacity = 1;
+                        }
+                        else if (FPSCount < Convert.ToInt32(MaxFpsBox.Text) / 3 * 2)
+                        {
+                            WarningCircle.Fill = System.Windows.Media.Brushes.YellowGreen;
+                            WarningCircle.Opacity = 1;
+                        }
+                        else
+                        {
+                            WarningCircle.Opacity = 0;
+                        }
                     }
-                    else if (FPSCount < Convert.ToInt32(MaxFpsBox.Text) / 3 * 2)
-                    {
-                        WarningCircle.Fill = System.Windows.Media.Brushes.YellowGreen;
-                        WarningCircle.Opacity = 1;
-                    }
-                    else
-                    {
-                        WarningCircle.Opacity = 0;
-                    }
+                    catch { }
                 });
                 FPSCount = 0;
                 Thread.Sleep(1000);
@@ -266,20 +283,23 @@ namespace FileSpy.Windows
 
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Space)
+            if (!MaxFpsBox.IsFocused)
             {
-                PauseButton_MouseLeftButtonUp(null, null);
-                LastMove = DateTime.Now;
-            }
+                if (e.Key == Key.Space)
+                {
+                    PauseButton_MouseLeftButtonUp(null, null);
+                    LastMove = DateTime.Now;
+                }
 
-            if (e.Key == Key.D1)
-            {
-                MicroButton_MouseLeftButtonUp(null, null);
-            }
+                if (e.Key == Key.D1)
+                {
+                    MicroButton_MouseLeftButtonUp(null, null);
+                }
 
-            if (e.Key == Key.D2)
-            {
-                AudioButton_MouseLeftButtonUp(null, null);
+                if (e.Key == Key.D2)
+                {
+                    AudioButton_MouseLeftButtonUp(null, null);
+                }
             }
         }
 
@@ -350,7 +370,7 @@ namespace FileSpy.Windows
         private void QComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Connection != null)
-                switch(QComboBox.SelectedIndex)
+                switch (QComboBox.SelectedIndex)
                 {
                     case 0:
                         Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetQuality, ID, "100"));
@@ -399,19 +419,29 @@ namespace FileSpy.Windows
 
         private void MaxFpsBox_KeyUp(object sender, KeyEventArgs e)
         {
-            try
+            if (e.Key == Key.Enter)
             {
-                if (e.Key == Key.Enter)
+                try
                 {
+                    int max = Convert.ToInt32(MaxFpsBox.Text);
                     if (Connection != null)
-                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetMaxFps, ID, MaxFpsBox.Text));
+                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetMaxFps, ID, max.ToString()));
                 }
-                int a = Convert.ToInt32(MaxFpsBox.Text);
+                catch
+                {
+                    MaxFpsBox.Text = "";
+                }
             }
-            catch
-            {
-                MaxFpsBox.Text = "10";
-            }
+        }
+
+        private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Keyboard.Focus(ImageTable);
+        }
+
+        private void MicroDevice_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetWaveDevice, ID, MicroDevice.Value.ToString()));
         }
     }
 }

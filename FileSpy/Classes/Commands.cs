@@ -71,5 +71,7 @@
         public static int SetLoop { get; private set; } = 52;
         public static int LoopInfo { get; private set; } = 53;
         public static int LoopData { get; private set; } = 54;
+        public static int WaveInCount { get; private set; } = 55;
+        public static int SetWaveDevice { get; private set; } = 56;
     }
 }
