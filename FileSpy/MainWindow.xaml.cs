@@ -34,7 +34,7 @@ namespace FileSpy
 
         SettingsClass Settings;
 
-        string Version = "[0.3.2.0]";
+        string Version = "[0.4.0.0]";
         string Status = "Simple";
         DateTime TurnOnTime = DateTime.Now;
 

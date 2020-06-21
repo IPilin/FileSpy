@@ -99,7 +99,7 @@
                     </Border>
                 </Grid>
                 <Grid Margin="0,60,0,20">
-                    <ListBox x:Name="FullTable" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single" Style="{DynamicResource ListBoxStyle1}">
+                    <ListBox x:Name="FullTable" Margin="5,0,5,0" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single" Style="{DynamicResource ListBoxStyle1}">
                         <ListBox.ItemContainerStyle>
                             <Style TargetType="{x:Type ListBoxItem}">
                                 <Setter Property="Background" Value="Transparent"/>
