@@ -108,7 +108,13 @@
             </Grid>
         </Border>
         <Label x:Name="NameLabel" Margin="0,-2,0,0" Foreground="#E3E3E5" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">File Spy</Label>
-        <Border x:Name="Table" Margin="0,30,0,0" CornerRadius="10" Background="#FFFEFF">
+        <Border x:Name="Table" Margin="0,30,0,0" CornerRadius="10">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0.3,0" EndPoint=".5,1">
+                    <GradientStop Color="#FFFEFF" Offset="0"/>
+                    <GradientStop Color="#FFF6FF" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
             <Grid>
                 <Grid Height="60" VerticalAlignment="Top">
                     <Line X1="0" X2="{Binding ElementName=Table, Path=ActualWidth}" Y1="60" Y2="60">
