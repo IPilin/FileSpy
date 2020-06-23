@@ -5,99 +5,101 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:FileSpy.Elements"
              mc:Ignorable="d" 
-             d:DesignHeight="30" d:DesignWidth="50">
+             d:DesignHeight="30" d:DesignWidth="60">
 
-    <Border CornerRadius="15" Height="30" Width="50">
-        <Grid Cursor="Hand" MouseLeftButtonUp="Grid_MouseLeftButtonUp">
-            <Border CornerRadius="15">
-                <Border.Background>
-                    <LinearGradientBrush>
-                        <GradientStop Color="#127FE8"/>
-                        <GradientStop Color="#579EE1" Offset="1"/>
-                    </LinearGradientBrush>
-                </Border.Background>
-            </Border>
-            <Border x:Name="RedSwitch" Margin="0,0,35,0" CornerRadius="15" Background="Red" Opacity="0"/>
-            <Border x:Name="SwitchCircle" Margin="2,0,0,0" CornerRadius="13" Height="26" Width="26" Background="#FFFEFF" HorizontalAlignment="Left">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="4" Opacity="0.25" ShadowDepth="2"/>
-                </Border.Effect>
-                <Grid>
-                    <Grid x:Name="GrayBell" Opacity="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
-                            <Canvas Name="Layer_1" Canvas.Left="0" Canvas.Top="0" Width="459.334" Height="459.334">
-                                <Canvas.RenderTransform>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </Canvas.RenderTransform>
-                                <Canvas.Resources/>
-                                <!--Unknown tag: metadata-->
-                                <!--Unknown tag: sodipodi:namedview-->
-                                <Canvas Name="g10">
-                                    <Canvas Name="g8">
-                                        <Canvas Name="g6">
-                                            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#A3B3B3">
-                                                <Path.Data>
-                                                    <PathGeometry Figures="M175.216 404.514c-0.001 0.12-0.009 0.239-0.009 0.359c0 30.078 24.383 54.461 54.461 54.461     s54.461-24.383 54.461-54.461c0-0.12-0.008-0.239-0.009-0.359H175.216z" FillRule="NonZero"/>
-                                                </Path.Data>
-                                            </Path>
-                                            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#A3B3B3">
-                                                <Path.Data>
-                                                    <PathGeometry Figures="M403.549 336.438l-49.015-72.002c0-22.041 0-75.898 0-89.83c0-60.581-43.144-111.079-100.381-122.459V24.485     C254.152 10.963 243.19 0 229.667 0s-24.485 10.963-24.485 24.485v27.663c-57.237 11.381-100.381 61.879-100.381 122.459     c0 23.716 0 76.084 0 89.83l-49.015 72.002c-5.163 7.584-5.709 17.401-1.419 25.511c4.29 8.11 12.712 13.182 21.887 13.182     H383.08c9.175 0 17.597-5.073 21.887-13.182C409.258 353.839 408.711 344.022 403.549 336.438z" FillRule="NonZero"/>
-                                                </Path.Data>
-                                            </Path>
-                                        </Canvas>
-                                    </Canvas>
+    <Grid Height="30" Width="60">
+        <Border HorizontalAlignment="Left" CornerRadius="10" Height="20" Width="40">
+            <Grid Cursor="Hand" MouseLeftButtonUp="Grid_MouseLeftButtonUp">
+                <Border CornerRadius="10">
+                    <Border.Background>
+                        <LinearGradientBrush>
+                            <GradientStop Color="#127FE8"/>
+                            <GradientStop Color="#579EE1" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                </Border>
+                <Border x:Name="RedSwitch" Margin="0,0,35,0" CornerRadius="10" Background="Red" Opacity="0"/>
+                <Border x:Name="SwitchCircle" Margin="2,0,0,0" CornerRadius="13" Height="16" Width="16" Background="#FFFEFF" HorizontalAlignment="Left">
+                    <Border.Effect>
+                        <DropShadowEffect BlurRadius="4" Opacity="0.25" ShadowDepth="2"/>
+                    </Border.Effect>
+                </Border>
+            </Grid>
+        </Border>
+        <Grid HorizontalAlignment="Right" Height="20" Width="20">
+            <Grid x:Name="GrayBell" Opacity="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                    <Canvas Name="Layer_1" Canvas.Left="0" Canvas.Top="0" Width="459.334" Height="459.334">
+                        <Canvas.RenderTransform>
+                            <TranslateTransform X="0" Y="0"/>
+                        </Canvas.RenderTransform>
+                        <Canvas.Resources/>
+                        <!--Unknown tag: metadata-->
+                        <!--Unknown tag: sodipodi:namedview-->
+                        <Canvas Name="g10">
+                            <Canvas Name="g8">
+                                <Canvas Name="g6">
+                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#A3B3B3">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M175.216 404.514c-0.001 0.12-0.009 0.239-0.009 0.359c0 30.078 24.383 54.461 54.461 54.461     s54.461-24.383 54.461-54.461c0-0.12-0.008-0.239-0.009-0.359H175.216z" FillRule="NonZero"/>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="#A3B3B3">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M403.549 336.438l-49.015-72.002c0-22.041 0-75.898 0-89.83c0-60.581-43.144-111.079-100.381-122.459V24.485     C254.152 10.963 243.19 0 229.667 0s-24.485 10.963-24.485 24.485v27.663c-57.237 11.381-100.381 61.879-100.381 122.459     c0 23.716 0 76.084 0 89.83l-49.015 72.002c-5.163 7.584-5.709 17.401-1.419 25.511c4.29 8.11 12.712 13.182 21.887 13.182     H383.08c9.175 0 17.597-5.073 21.887-13.182C409.258 353.839 408.711 344.022 403.549 336.438z" FillRule="NonZero"/>
+                                        </Path.Data>
+                                    </Path>
                                 </Canvas>
-                                <Canvas Name="g12"/>
-                                <Canvas Name="g14"/>
-                                <Canvas Name="g16"/>
-                                <Canvas Name="g18"/>
-                                <Canvas Name="g20"/>
-                                <Canvas Name="g22"/>
-                                <Canvas Name="g24"/>
-                                <Canvas Name="g26"/>
-                                <Canvas Name="g28"/>
-                                <Canvas Name="g30"/>
-                                <Canvas Name="g32"/>
-                                <Canvas Name="g34"/>
-                                <Canvas Name="g36"/>
-                                <Canvas Name="g38"/>
-                                <Canvas Name="g40"/>
                             </Canvas>
-                        </Viewbox>
-                    </Grid>
-                    <Grid x:Name="RedBell" Opacity="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
-                            <Canvas Canvas.Left="0" Canvas.Top="0" Width="459.334" Height="459.334">
-                                <Canvas.RenderTransform>
-                                    <TranslateTransform X="0" Y="0"/>
-                                </Canvas.RenderTransform>
-                                <Canvas.Resources/>
-                                <!--Unknown tag: metadata-->
-                                <!--Unknown tag: sodipodi:namedview-->
+                        </Canvas>
+                        <Canvas Name="g12"/>
+                        <Canvas Name="g14"/>
+                        <Canvas Name="g16"/>
+                        <Canvas Name="g18"/>
+                        <Canvas Name="g20"/>
+                        <Canvas Name="g22"/>
+                        <Canvas Name="g24"/>
+                        <Canvas Name="g26"/>
+                        <Canvas Name="g28"/>
+                        <Canvas Name="g30"/>
+                        <Canvas Name="g32"/>
+                        <Canvas Name="g34"/>
+                        <Canvas Name="g36"/>
+                        <Canvas Name="g38"/>
+                        <Canvas Name="g40"/>
+                    </Canvas>
+                </Viewbox>
+            </Grid>
+            <Grid x:Name="RedBell" Opacity="0" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                    <Canvas Canvas.Left="0" Canvas.Top="0" Width="459.334" Height="459.334">
+                        <Canvas.RenderTransform>
+                            <TranslateTransform X="0" Y="0"/>
+                        </Canvas.RenderTransform>
+                        <Canvas.Resources/>
+                        <!--Unknown tag: metadata-->
+                        <!--Unknown tag: sodipodi:namedview-->
+                        <Canvas>
+                            <Canvas>
                                 <Canvas>
-                                    <Canvas>
-                                        <Canvas>
-                                            <Path  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="Red">
-                                                <Path.Data>
-                                                    <PathGeometry Figures="M175.216 404.514c-0.001 0.12-0.009 0.239-0.009 0.359c0 30.078 24.383 54.461 54.461 54.461     s54.461-24.383 54.461-54.461c0-0.12-0.008-0.239-0.009-0.359H175.216z" FillRule="NonZero"/>
-                                                </Path.Data>
-                                            </Path>
-                                            <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="Red">
-                                                <Path.Data>
-                                                    <PathGeometry Figures="M403.549 336.438l-49.015-72.002c0-22.041 0-75.898 0-89.83c0-60.581-43.144-111.079-100.381-122.459V24.485     C254.152 10.963 243.19 0 229.667 0s-24.485 10.963-24.485 24.485v27.663c-57.237 11.381-100.381 61.879-100.381 122.459     c0 23.716 0 76.084 0 89.83l-49.015 72.002c-5.163 7.584-5.709 17.401-1.419 25.511c4.29 8.11 12.712 13.182 21.887 13.182     H383.08c9.175 0 17.597-5.073 21.887-13.182C409.258 353.839 408.711 344.022 403.549 336.438z" FillRule="NonZero"/>
-                                                </Path.Data>
-                                            </Path>
-                                        </Canvas>
-                                    </Canvas>
+                                    <Path  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="Red">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M175.216 404.514c-0.001 0.12-0.009 0.239-0.009 0.359c0 30.078 24.383 54.461 54.461 54.461     s54.461-24.383 54.461-54.461c0-0.12-0.008-0.239-0.009-0.359H175.216z" FillRule="NonZero"/>
+                                        </Path.Data>
+                                    </Path>
+                                    <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Fill="Red">
+                                        <Path.Data>
+                                            <PathGeometry Figures="M403.549 336.438l-49.015-72.002c0-22.041 0-75.898 0-89.83c0-60.581-43.144-111.079-100.381-122.459V24.485     C254.152 10.963 243.19 0 229.667 0s-24.485 10.963-24.485 24.485v27.663c-57.237 11.381-100.381 61.879-100.381 122.459     c0 23.716 0 76.084 0 89.83l-49.015 72.002c-5.163 7.584-5.709 17.401-1.419 25.511c4.29 8.11 12.712 13.182 21.887 13.182     H383.08c9.175 0 17.597-5.073 21.887-13.182C409.258 353.839 408.711 344.022 403.549 336.438z" FillRule="NonZero"/>
+                                        </Path.Data>
+                                    </Path>
                                 </Canvas>
                             </Canvas>
-                        </Viewbox>
-                    </Grid>
-                    <Line x:Name="WhiteLine" X1="9" X2="9" Y1="6" Y2="6" StrokeThickness="3" Stroke="#FFFEFF"/>
-                    <Line x:Name="RedLine" X1="9" X2="9" Y1="6" Y2="6" StrokeThickness="1" Stroke="Red"/>
-                </Grid>
-            </Border>
+                        </Canvas>
+                    </Canvas>
+                </Viewbox>
+            </Grid>
+            <Line x:Name="WhiteLine" X1="9" X2="9" Y1="6" Y2="6" StrokeThickness="3" Stroke="#FFFEFF"/>
+            <Line x:Name="RedLine" X1="9" X2="9" Y1="6" Y2="6" StrokeThickness="1" Stroke="Red"/>
         </Grid>
-    </Border>
+    </Grid>
 </UserControl>

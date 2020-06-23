@@ -111,9 +111,6 @@
                         </Viewbox>
                     </Grid>
                 </Grid>
-                <Grid Height="35" Margin="0,35,0,0" VerticalAlignment="Top">
-                    <elements:SwitchControl Opacity="0" x:Name="SilenceControll"/>
-                </Grid>
                 <Grid Cursor="Hand" Style="{StaticResource GrayStyle}" Opacity="1" Height="35" VerticalAlignment="Bottom">
                     <Grid Height="20" Width="20" HorizontalAlignment="Center">
                         <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
@@ -135,9 +132,10 @@
                 </Grid>
             </Grid>
             <Grid Margin="40,0,0,0" Background="#FFFFFFFF">
-                <Label Margin="10,30,0,0" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left">Users:</Label>
-                <Line X1="0" X2="460" Y1="60" Y2="60" StrokeThickness="1" Stroke="#40000000"/>
-                <Border Margin="10,60,10,0">
+                <Label Margin="10,50,0,0" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left">Users:</Label>
+                <elements:SwitchControl x:Name="SilenceControll" Margin="0,40,0,0" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                <Line X1="10" X2="445" Y1="80" Y2="80" StrokeThickness="1" Stroke="#40000000"/>
+                <Border Margin="10,80,10,0">
                     <Grid>
                         <Label x:Name="DisconnectLabel" Foreground="Red" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center">Connection lost.</Label>
                         <ListBox x:Name="FullTable" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single" Style="{DynamicResource ListBoxStyle1}">
