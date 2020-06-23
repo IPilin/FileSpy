@@ -94,7 +94,7 @@ namespace FileSpy
 
         public MainWindow()
         {
-            //WindowBlur.SetIsEnabled(this, true);
+            WindowBlur.SetIsEnabled(this, true);
             InitializeComponent();
 
             Helper = new FlashWindowHelper(System.Windows.Application.Current);
@@ -196,32 +196,12 @@ namespace FileSpy
 
         private void LostConnection()
         {
-            while (Dispatcher.Invoke(() => GreenColor.Offset < 1.4) && !Connection.Connected)
-            {
-                Dispatcher.Invoke(() => GreenColor.Offset += 0.1);
-                Thread.Sleep(50);
-            }
 
-            while (Dispatcher.Invoke(() => RedColor.Offset > 0.7) && !Connection.Connected)
-            {
-                Dispatcher.Invoke(() => RedColor.Offset -= 0.1);
-                Thread.Sleep(50);
-            }
         }
 
         private void FindConnection()
         {
-            while (Dispatcher.Invoke(() => RedColor.Offset < 1.4) && Connection.Connected)
-            {
-                Dispatcher.Invoke(() => RedColor.Offset += 0.1);
-                Thread.Sleep(50);
-            }
 
-            while (Dispatcher.Invoke(() => GreenColor.Offset > 0.7) && Connection.Connected)
-            {
-                Dispatcher.Invoke(() => GreenColor.Offset -= 0.1);
-                Thread.Sleep(50);
-            }
         }
 
         private void Connection_AcceptMessage(MessageClass message)
