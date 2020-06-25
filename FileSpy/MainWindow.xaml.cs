@@ -181,6 +181,8 @@ namespace FileSpy
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Connection.Start();
+            if (Environment.GetCommandLineArgs()[1] == "hidden" && Settings.HiddenStart)
+                CloseButton_MouseLeftButtonUp(null, null);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -247,22 +249,26 @@ namespace FileSpy
 
                     Dispatcher.Invoke(() =>
                     {
-                        int count = Users.Count;
-                        for (int i = 0; i < count; i++)
+                        try
                         {
-                            FullTable.Items.Remove(Users[0]);
-                            Users.Remove(Users[0]);
-                        }
+                            int count = Users.Count;
+                            for (int i = 0; i < count; i++)
+                            {
+                                FullTable.Items.Remove(Users[0]);
+                                Users.Remove(Users[0]);
+                            }
 
-                        for (int i = 0; i < com.Length; i += 3)
-                        {
-                            var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
-                            user.ActiveEvent += User_ActiveEvent;
-                            Users.Add(user);
-                            FullTable.Items.Add(user);
-                            if (Status != "Simple")
-                                user.SetEnabled(1, true);
+                            for (int i = 0; i < com.Length; i += 3)
+                            {
+                                var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
+                                user.ActiveEvent += User_ActiveEvent;
+                                Users.Add(user);
+                                FullTable.Items.Add(user);
+                                if (Status != "Simple")
+                                    user.SetEnabled(1, true);
+                            }
                         }
+                        catch { }
                     });
                 }
                 catch { }
