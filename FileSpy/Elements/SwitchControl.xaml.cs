@@ -47,11 +47,6 @@ namespace FileSpy.Elements
                 int delay = 15;
                 for (int i = 0; i < 10; i++)
                 {
-                    Dispatcher.Invoke(() => GrayBell.Opacity += 0.1);
-                    Thread.Sleep(15);
-                }
-                for (int i = 0; i < 10; i++)
-                {
                     Dispatcher.Invoke(() => RedBell.Opacity += 0.05);
                     Dispatcher.Invoke(() => WhiteLine.X2 += 0.4);
                     Dispatcher.Invoke(() => RedLine.X2 += 0.4);
@@ -77,15 +72,6 @@ namespace FileSpy.Elements
                     Dispatcher.Invoke(() => SwitchCircle.Margin = new Thickness(SwitchCircle.Margin.Left + 1, SwitchCircle.Margin.Top, SwitchCircle.Margin.Right, SwitchCircle.Margin.Bottom));
                     delay++;
                     Thread.Sleep(delay);
-                }
-                Dispatcher.Invoke(() => GrayBell.Opacity = 0);
-                Thread.Sleep(400);
-                for (int i = 0; i < 20; i++)
-                {
-                    Dispatcher.Invoke(() => RedBell.Opacity -= 0.05);
-                    Dispatcher.Invoke(() => RedLine.Opacity -= 0.05);
-                    Dispatcher.Invoke(() => WhiteLine.Opacity -= 0.05);
-                    Thread.Sleep(15);
                 }
                 Busy = false;
             }
@@ -98,14 +84,6 @@ namespace FileSpy.Elements
                 Busy = true;
                 Mode = true;
                 int delay = 15;
-                Dispatcher.Invoke(() => GrayBell.Opacity = 1);
-                for (int i = 0; i < 20; i++)
-                {
-                    Dispatcher.Invoke(() => RedBell.Opacity += 0.05);
-                    Dispatcher.Invoke(() => RedLine.Opacity += 0.05);
-                    Dispatcher.Invoke(() => WhiteLine.Opacity += 0.05);
-                    Thread.Sleep(15);
-                }
                 for (int i = 0; i < 10; i++)
                 {
                     Dispatcher.Invoke(() => RedBell.Opacity -= 0.05);
@@ -134,12 +112,7 @@ namespace FileSpy.Elements
                     delay++;
                     Thread.Sleep(delay);
                 }
-                Thread.Sleep(400);
-                for (int i = 0; i < 10; i++)
-                {
-                    Dispatcher.Invoke(() => GrayBell.Opacity -= 0.1);
-                    Thread.Sleep(15);
-                }
+
                 Busy = false;
             }
         }
