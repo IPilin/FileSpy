@@ -1,5 +1,9 @@
 ﻿using FileSpy.Classes;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms.VisualStyles;
 using System.Windows.Input;
 
 namespace FileSpy.Elements
@@ -12,15 +16,18 @@ namespace FileSpy.Elements
         public delegate void EventHandler(int id, string name, int command);
         public event EventHandler ActiveEvent;
 
+        public bool Checked { get; set; }
         public int ID { get; set; }
         bool Admin;
 
         public UserControll(int id, string name, string desktop)
         {
             InitializeComponent();
+
             ID = id;
             NameLabel.Content = name;
             DesktopLabel.Content = desktop;
+            Checked = true;
         }
 
         public void SetEnabled(int opacity, bool enabled)
@@ -59,6 +66,29 @@ namespace FileSpy.Elements
         {
             if (Admin)
                 ActiveEvent(ID, NameLabel.Content as string, ElementCommands.InfoModule);
+        }
+
+        public void LoadedAnimation()
+        {
+            int delay = 15;
+            for (int i = 0; i < 10; i++)
+            {
+                Dispatcher.Invoke(() => MainGrid.Margin = new Thickness(0, MainGrid.Margin.Top + 5, 0, 0));
+                Thread.Sleep(delay);
+                delay--;
+            }
+        }
+
+        public void UnloadedAnimation()
+        {
+            int delay = 15;
+            for (int i = 0; i < 10; i++)
+            {
+                //Dispatcher.Invoke(() => MainGrid.Margin = new Thickness(0, MainGrid.Margin.Top - 5, 0, 0));
+                Dispatcher.Invoke(() => RealGrid.Height -= 5);
+                Thread.Sleep(delay);
+                delay--;
+            }
         }
     }
 }

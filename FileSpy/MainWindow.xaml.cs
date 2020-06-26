@@ -246,11 +246,12 @@ namespace FileSpy
                 try
                 {
                     string[] com = message.GetStringPackage().Split(';');
-
+                    AddUser(com);
                     Dispatcher.Invoke(() =>
                     {
                         try
                         {
+                            /*
                             int count = Users.Count;
                             for (int i = 0; i < count; i++)
                             {
@@ -267,6 +268,7 @@ namespace FileSpy
                                 if (Status != "Simple")
                                     user.SetEnabled(1, true);
                             }
+                            */
                         }
                         catch { }
                     });
@@ -870,6 +872,70 @@ namespace FileSpy
                 catch { }
             }
             #endregion
+        }
+
+        private async void AddUser(string[] com)
+        {
+            try
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    for (int i = 0; i < Users.Count; i++)
+                        Users[i].Checked = false;
+                });
+
+                for (int i = 0; i < com.Length; i += 3)
+                {
+                    int eq = 0;
+                    Dispatcher.Invoke(() =>
+                    {
+                        var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
+
+                        for (int k = 0; k < Users.Count; k++)
+                        {
+                            if (user.ID == Users[k].ID)
+                            {
+                                Users[k].Checked = true;
+                                eq++;
+                            }
+                        }
+                    });
+
+                    if (eq == 0)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
+                            user.ActiveEvent += User_ActiveEvent;
+                            Users.Add(user);
+                            FullTable.Items.Add(user);
+                            if (Status != "Simple")
+                                user.SetEnabled(1, true);
+                        });
+                        await Task.Run(Users[Users.Count - 1].LoadedAnimation);
+                    }
+                }
+
+                for (int i = 0; i < Dispatcher.Invoke(() => Users.Count); i++)
+                {
+                    if (Dispatcher.Invoke(() => !Users[i].Checked))
+                    {
+                        RemoveUser(i);
+                    }
+                }
+
+            }
+            catch { }
+        }
+
+        private async void RemoveUser(int id)
+        {
+            await Task.Run(Users[id].UnloadedAnimation);
+            Dispatcher.Invoke(() =>
+            {
+                FullTable.Items.Remove(Users[id]);
+                Users.Remove(Users[id]);
+            });
         }
 
         private void User_ActiveEvent(int id, string name, int command)

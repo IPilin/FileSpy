@@ -146,7 +146,7 @@
                 <Label Margin="10,50,0,0" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left">Users:</Label>
                 <elements:SwitchControl x:Name="SilenceControll" Margin="0,50,20,0" VerticalAlignment="Top" HorizontalAlignment="Right"/>
                 <Line X1="10" X2="445" Y1="85" Y2="85" StrokeThickness="1" Stroke="#40000000"/>
-                <Border Margin="10,85,10,0">
+                <Border Margin="10,90,10,0">
                     <Grid>
                         <Label x:Name="DisconnectLabel" Foreground="Red" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center">Connection lost.</Label>
                         <ListBox x:Name="FullTable" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single" Style="{DynamicResource ListBoxStyle1}">
