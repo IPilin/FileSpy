@@ -27,6 +27,7 @@
         public static int FileInfo { get; private set; } = 15;
         public static int FileData { get; private set; } = 16;
         public static int FileOK { get; private set; } = 17;
+        public static int FileDone { get; private set; } = 34;
 
         public static int RVideoModule { get; private set; } = 18;
         public static int HVideoModule { get; private set; } = 19;
@@ -48,5 +49,29 @@
         public static int Info { get; private set; } = 32;
 
         public static int SetCursor { get; private set; } = 33;
+
+        public static int RFileModule { get; private set; } = 35;
+        public static int HFileModule { get; private set; } = 36;
+        public static int FileMAccepted { get; private set; } = 37;
+        public static int FileMDenied { get; private set; } = 38;
+        public static int CD { get; private set; } = 39;
+        public static int Dirs { get; private set; } = 40;
+        public static int FilePulsar { get; private set; } = 41;
+        public static int Run { get; private set; } = 42;
+        public static int RunWith { get; private set; } = 43;
+        public static int Delete { get; private set; } = 44;
+        public static int StartDownload { get; private set; } = 45;
+        public static int StopDownload { get; private set; } = 46;
+        public static int FileDData { get; private set; } = 47;
+        public static int FileUData { get; private set; } = 48;
+        public static int GetDirInfo { get; private set; } = 49;
+        public static int DirInfo { get; private set; } = 50;
+        public static int FileUError { get; private set; } = 51;
+
+        public static int SetLoop { get; private set; } = 52;
+        public static int LoopInfo { get; private set; } = 53;
+        public static int LoopData { get; private set; } = 54;
+        public static int WaveInCount { get; private set; } = 55;
+        public static int SetWaveDevice { get; private set; } = 56;
     }
 }

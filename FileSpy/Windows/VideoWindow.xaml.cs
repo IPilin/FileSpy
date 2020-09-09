@@ -2,13 +2,18 @@
 using NAudio.Wave;
 using NAudio.Wave.SampleProviders;
 using System;
+using System.Drawing;
 using System.IO;
 using System.IO.Compression;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 
 namespace FileSpy.Windows
@@ -21,16 +26,27 @@ namespace FileSpy.Windows
         public int ID { get; set; }
         public int UserID { get; set; }
 
+        int MaxFps;
         int FPSCount;
+        DateTime LastFrame;
+        UInt64 FrameID;
 
         WaveOut MicroOut;
         public BufferedWaveProvider MicroBuffer { get; set; }
         VolumeSampleProvider MicroVolume;
 
+        WasapiOut LoopOut = new WasapiOut();
+        public BufferedWaveProvider LoopBuffer { get; set; }
+        VolumeSampleProvider LoopVolume;
+
         public delegate void CloseHandler(VideoWindow window);
-        public event CloseHandler CloseEvent; 
+        public event CloseHandler CloseEvent;
 
         ConnectionClass Connection;
+
+        DateTime LastMove = DateTime.Now;
+        DoubleAnimation DownAnimation = new DoubleAnimation();
+        DoubleAnimation UpAnimation = new DoubleAnimation();
 
         public VideoWindow(int id, int userId, string userName, ConnectionClass connection)
         {
@@ -41,6 +57,10 @@ namespace FileSpy.Windows
             Title = userName;
             Connection = connection;
 
+            MaxFps = 10;
+            LastFrame = DateTime.Now;
+            FrameID = 0;
+
             MicroOut = new WaveOut();
             MicroBuffer = new BufferedWaveProvider(new WaveFormat(8000, 16, 1));
             MicroVolume = new VolumeSampleProvider(MicroBuffer.ToSampleProvider());
@@ -50,13 +70,20 @@ namespace FileSpy.Windows
             Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.RVideoModule, ID));
             Task.Run(Pulsar);
             Task.Run(FpsCounter);
+            Task.Run(UITimer);
         }
 
-        public void SetVideoData(byte[] data)
+        public void SetVideoData(byte[] buffer)
         {
+            var data = new VideoData(buffer);
+            if (data.ID < FrameID)
+                return;
+            else
+                FrameID++;
             StatusLabel.Opacity = 0;
             FPSCount++;
-            ImageTable.Source = ConvertBM(data);
+            LastFrame = DateTime.Now;
+            ImageTable.Source = ConvertBM(data.Data);
         }
 
         public void Denied()
@@ -64,16 +91,49 @@ namespace FileSpy.Windows
             StatusLabel.Content = "Request denied :<";
         }
 
+        public void SetupLoop(byte[] buffer)
+        {
+            using (var ms = new MemoryStream(buffer))
+            {
+                using (var br = new BinaryReader(ms))
+                {
+                    WaveFormat format = new WaveFormat(br);
+                    LoopBuffer = new BufferedWaveProvider(format);
+                    LoopVolume = new VolumeSampleProvider(LoopBuffer.ToSampleProvider());
+                    LoopOut.Init(LoopVolume);
+                    LoopOut.Play();
+                }
+            }
+        }
+
+        public void SetWaveIn(int count)
+        {
+            try
+            {
+                MicroDevice.Maximum = count;
+            }
+            catch { }
+        }
+
         private void Window_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.GetPosition(this).Y >= ActualHeight - 150)
-            {
-                V.Opacity = 1;
-            }
-            else
-            {
-                V.Opacity = 0;
-            }
+            LastMove = DateTime.Now;
+        }
+
+        private void Window_MouseLeave(object sender, MouseEventArgs e)
+        {
+            LastMove = DateTime.MinValue;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            DownAnimation.From = 1;
+            DownAnimation.To = 0;
+            DownAnimation.Duration = TimeSpan.FromMilliseconds(500);
+
+            UpAnimation.From = 0;
+            UpAnimation.To = 1;
+            UpAnimation.Duration = TimeSpan.FromMilliseconds(500);
         }
 
         private void Window_Closed(object sender, System.EventArgs e)
@@ -81,11 +141,58 @@ namespace FileSpy.Windows
             CloseEvent(this);
         }
 
+        private void UITimer()
+        {
+            while (Dispatcher.Invoke(() => IsLoaded))
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    if ((DateTime.Now - LastMove).TotalSeconds < 3)
+                    {
+                        if (UIGrid.Opacity != 1)
+                            UIGrid.Opacity = 1;
+                    }
+                    else
+                    {
+                        System.Windows.Point mouse = Mouse.GetPosition(this);
+                        if (UIGrid.Opacity != 0 && mouse.Y < ActualHeight - 150)
+                        {
+                            UIGrid.Opacity = 0;
+                            Keyboard.Focus(ImageTable);
+                        }
+                    }
+                });
+
+                Thread.Sleep(100);
+            }
+        }
+
         private void FpsCounter()
         {
             while (Dispatcher.Invoke(() => IsLoaded))
             {
-                Dispatcher.Invoke(() => FPSLabel.Content = FPSCount.ToString() + "FPS");
+                Dispatcher.Invoke(() =>
+                {
+                    try
+                    {
+                        FPSLabel.Content = FPSCount.ToString() + "FPS";
+                        if (FPSCount == 0)
+                        {
+                            WarningCircle.Fill = System.Windows.Media.Brushes.Red;
+                            WarningCircle.Opacity = 1;
+                        }
+                        else if (FPSCount < Convert.ToInt32(MaxFpsBox.Text) / 3 * 2)
+                        {
+                            WarningCircle.Fill = System.Windows.Media.Brushes.YellowGreen;
+                            WarningCircle.Opacity = 1;
+                        }
+                        else
+                        {
+                            WarningCircle.Opacity = 0;
+                        }
+                    }
+                    catch { }
+                });
                 FPSCount = 0;
                 Thread.Sleep(1000);
             }
@@ -136,138 +243,205 @@ namespace FileSpy.Windows
             return source;
         }
 
-        #region UIEvents
-        private void SizeSlider_MouseEnter(object sender, MouseEventArgs e)
+        private void MicroGrid_MouseEnter(object sender, MouseEventArgs e)
         {
-            InfoPopup.PlacementTarget = sender as UIElement;
-            InfoPopup.HorizontalOffset = 55;
-            InfoPopup.IsOpen = true;
-        }
-
-        private void SizeSlider_MouseLeave(object sender, MouseEventArgs e)
-        {
-            InfoPopup.IsOpen = false;
-        }
-
-        private void SizeSlider_MouseMove(object sender, MouseEventArgs e)
-        {
-            switch (SizeSlider.Value)
+            if (sender == MicroButton)
             {
-                case 0:
-                    InfoLabel.Content = "360p";
-                    break;
-                case 1:
-                    InfoLabel.Content = "480p";
-                    break;
-                case 2:
-                    InfoLabel.Content = "720p";
-                    break;
+                if (MicroButton.Opacity == 1)
+                    MicroPopup.IsOpen = true;
             }
-            InfoPopup.IsOpen = false;
-            InfoPopup.IsOpen = true;
+            else
+            {
+                if (AudioButton.Opacity == 1)
+                    AudioPopup.IsOpen = true;
+            }
         }
 
-        private void QualitySlider_MouseMove(object sender, MouseEventArgs e)
+        private void MicroGrid_MouseLeave(object sender, MouseEventArgs e)
         {
-            InfoLabel.Content = QualitySlider.Value.ToString("0.0");
-            InfoPopup.IsOpen = false;
-            InfoPopup.IsOpen = true;
+            if (sender as Popup == MicroPopup)
+                MicroPopup.IsOpen = false;
+            else
+                AudioPopup.IsOpen = false;
         }
 
-        private void MicroSlider_MouseMove(object sender, MouseEventArgs e)
+        private void PauseButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            InfoLabel.Content = MicroSlider.Value.ToString("0.0");
-            InfoPopup.IsOpen = false;
-            InfoPopup.IsOpen = true;
+            if (PauseButton.Opacity == 1)
+            {
+                PauseButton.BeginAnimation(Grid.OpacityProperty, DownAnimation);
+                PlayButton.BeginAnimation(Grid.OpacityProperty, UpAnimation);
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetVideo, ID, false.ToString()));
+            }
+            else if (PauseButton.Opacity == 0)
+            {
+                PauseButton.BeginAnimation(Grid.OpacityProperty, UpAnimation);
+                PlayButton.BeginAnimation(Grid.OpacityProperty, DownAnimation);
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetVideo, ID, true.ToString()));
+            }
         }
 
-        private void AudioSlider_MouseMove(object sender, MouseEventArgs e)
+        private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            InfoLabel.Content = AudioSlider.Value.ToString("0.0");
-            InfoPopup.IsOpen = false;
-            InfoPopup.IsOpen = true;
+            if (!MaxFpsBox.IsFocused)
+            {
+                if (e.Key == Key.Space)
+                {
+                    PauseButton_MouseLeftButtonUp(null, null);
+                    LastMove = DateTime.Now;
+                }
+
+                if (e.Key == Key.D1)
+                {
+                    MicroButton_MouseLeftButtonUp(null, null);
+                }
+
+                if (e.Key == Key.D2)
+                {
+                    AudioButton_MouseLeftButtonUp(null, null);
+                }
+            }
         }
 
-        private void VideoCheck_Checked(object sender, RoutedEventArgs e)
+        private void MicroButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (MicroButton.Opacity == 0.5)
+            {
+                MicroButton.Opacity = 1;
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetMicro, ID, true.ToString()));
+            }
+            else
+            {
+                MicroButton.Opacity = 0.5;
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetMicro, ID, false.ToString()));
+            }
+        }
+
+        private void AudioButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (AudioButton.Opacity == 0.5)
+            {
+                AudioButton.Opacity = 1;
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetLoop, ID, true.ToString()));
+            }
+            else
+            {
+                AudioButton.Opacity = 0.5;
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetLoop, ID, false.ToString()));
+            }
+        }
+
+        private void Slider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (sender == MicroSlider)
+            {
+                if (MicroVolume != null)
+                    MicroVolume.Volume = (float)(sender as Slider).Value;
+            }
+            else
+            {
+                if (LoopVolume != null)
+                    LoopVolume.Volume = (float)(sender as Slider).Value;
+            }
+        }
+
+        private void MicroSlider_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (sender == MicroSlider)
+            {
+                MicroSlider.Value = 1;
+                if (MicroVolume != null)
+                    MicroVolume.Volume = 1;
+            }
+            else
+            {
+                AudioSlider.Value = 1;
+                if (LoopVolume != null)
+                    LoopVolume.Volume = 1;
+            }
+        }
+
+        private void SizeComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Connection != null)
-                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetVideo, ID, VideoCheck.IsChecked.ToString()));
+                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetSize, ID, (2 - SizeComboBox.SelectedIndex).ToString()));
         }
 
-        private void MaxFpsText_KeyUp(object sender, KeyEventArgs e)
+        private void QComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (Connection != null)
+                switch (QComboBox.SelectedIndex)
+                {
+                    case 0:
+                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetQuality, ID, "100"));
+                        break;
+                    case 1:
+                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetQuality, ID, "75"));
+                        break;
+                    case 2:
+                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetQuality, ID, "50"));
+                        break;
+                    case 3:
+                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetQuality, ID, "25"));
+                        break;
+                }
+        }
+
+        private void FpsButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (FpsButton.Opacity == 0.5)
+            {
+                FPSLabel.Opacity = 1;
+                FpsButton.Opacity = 1;
+            }
+            else
+            {
+                FPSLabel.Opacity = 0;
+                FpsButton.Opacity = 0.5;
+            }
+        }
+
+        private void CursorButton_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (CursorButton.Opacity == 0.5)
+            {
+                if (Connection != null)
+                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetCursor, ID, true.ToString()));
+                CursorButton.Opacity = 1;
+            }
+            else
+            {
+                if (Connection != null)
+                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetCursor, ID, false.ToString()));
+                CursorButton.Opacity = 0.5;
+            }
+        }
+
+        private void MaxFpsBox_KeyUp(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter)
             {
                 try
                 {
-                    int fps = Convert.ToInt32(MaxFpsText.Text);
-                    Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetMaxFps, ID, MaxFpsText.Text));
+                    int max = Convert.ToInt32(MaxFpsBox.Text);
+                    if (Connection != null)
+                        Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetMaxFps, ID, max.ToString()));
                 }
                 catch
                 {
-                    MaxFpsText.Text = "";
+                    MaxFpsBox.Text = "";
                 }
             }
         }
 
-        private void SizeSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void Window_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (Connection != null)
-                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetSize, ID, SizeSlider.Value.ToString()));
+            Keyboard.Focus(ImageTable);
         }
 
-        private void QualitySlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void MicroDevice_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (Connection != null)
-                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetQuality, ID, Convert.ToInt32(QualitySlider.Value).ToString()));
+            Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetWaveDevice, ID, MicroDevice.Value.ToString()));
         }
-
-        private void MicroCheck_Checked(object sender, RoutedEventArgs e)
-        {
-            if (Connection != null)
-                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetMicro, ID, MicroCheck.IsChecked.ToString()));
-        }
-
-        private void MicroSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (MicroOut != null)
-                MicroVolume.Volume = (float)MicroSlider.Value;
-        }
-
-        private void AudioCheck_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void AudioSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-
-        }
-
-        private void FpsVisibleCheck_Checked(object sender, RoutedEventArgs e)
-        {
-            if (FPSLabel.Opacity == 0)
-                FPSLabel.Opacity = 1;
-            else
-                FPSLabel.Opacity = 0;
-        }
-
-        private void SecurityCheck_Checked(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void CursorCheck_Checked(object sender, RoutedEventArgs e)
-        {
-            if (Connection != null)
-                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetCursor, ID, CursorCheck.IsChecked.ToString()));
-        }
-
-        private void CursorCheck_Unchecked(object sender, RoutedEventArgs e)
-        {
-            if (Connection != null)
-                Connection.SendMessage(new MessageClass(Connection.ID, UserID, Commands.SetCursor, ID, CursorCheck.IsChecked.ToString()));
-        }
-        #endregion
     }
 }

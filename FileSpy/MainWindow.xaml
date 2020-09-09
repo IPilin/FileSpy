@@ -8,7 +8,7 @@
         mc:Ignorable="d"
         Title="FileSpy" Height="300" Width="510" WindowStyle="None" Background="Transparent" AllowsTransparency="True" 
         WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
-        Loaded="Window_Loaded" KeyUp="Window_KeyUp" StateChanged="Window_StateChanged" Closing="Window_Closing">
+        Loaded="Window_Loaded" KeyUp="Window_KeyUp" StateChanged="Window_StateChanged" Closing="Window_Closing" FontFamily="/FileSpy;component/Resources/#Ubuntu">
     <Window.Resources>
         <SolidColorBrush x:Key="ListBox.Static.Background" Color="#FFFFFFFF"/>
         <SolidColorBrush x:Key="ListBox.Static.Border" Color="#FFABADB3"/>
@@ -51,90 +51,183 @@
             </Setter>
         </Style>
 
+        <Style x:Key="GrayStyle">
+            <Style.Triggers>
+                <Trigger Property="Control.IsMouseOver" Value="True">
+                    <Setter Property="Control.Background" Value="#7FC5C5C5"/>
+                </Trigger>
+                <Trigger Property="Control.IsMouseOver" Value="False">
+                    <Setter Property="Control.Background" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="RedStyle">
+            <Style.Triggers>
+                <Trigger Property="Control.IsMouseOver" Value="True">
+                    <Setter Property="Control.Background" Value="Red"/>
+                </Trigger>
+                <Trigger Property="Control.IsMouseOver" Value="False">
+                    <Setter Property="Control.Background" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
     </Window.Resources>
-    <Window.Effect>
-        <DropShadowEffect Color="Gray" BlurRadius="10" Opacity="0.5" Direction="-90" RenderingBias="Quality" ShadowDepth="4"/>
-    </Window.Effect>
-    <Grid x:Name="Grid" Margin="255,10,255,10" Opacity="1">
-        <Border Background="#92B9C0" CornerRadius="10,10,0,0" Opacity="0.7" Height="40" VerticalAlignment="Top">
-        </Border>
-        <Border VerticalAlignment="Top" Height="50" CornerRadius="10,10,0,0">
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                    <GradientStop Color="Transparent" Offset="0"/>
-                    <GradientStop x:Name="GreenColor" Color="Green" Offset="1.4"/>
-                    <GradientStop x:Name="RedColor" Color="Red" Offset="0.7"/>
-                </LinearGradientBrush>
-            </Border.Background>
-            <Grid>
-                <Grid x:Name="Topper" MouseLeftButtonDown="Topper_MouseLeftButtonDown" Background="White" Opacity="0"></Grid>
-                <Ellipse x:Name="CloseButton" Cursor="Hand" MouseLeftButtonUp="CloseButton_MouseLeftButtonUp" Margin="0,7,10,0" Fill="Red" Stroke="Black" StrokeThickness="0" Width="15" Height="15" HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Ellipse.Effect>
-                        <DropShadowEffect BlurRadius="2" Opacity="0.25" ShadowDepth="1"/>
-                    </Ellipse.Effect>
-                </Ellipse>
-                <Ellipse x:Name="MinimazeButton" Cursor="Hand" MouseLeftButtonUp="MinimazeButton_MouseLeftButtonUp" Margin="0,7,30,0" Fill="YellowGreen" Stroke="Black" StrokeThickness="0" Width="15" Height="15" HorizontalAlignment="Right" VerticalAlignment="Top">
-                    <Ellipse.Effect>
-                        <DropShadowEffect BlurRadius="2" Opacity="0.25" ShadowDepth="1"/>
-                    </Ellipse.Effect>
-                </Ellipse>
-            </Grid>
-        </Border>
-        <Label x:Name="NameLabel" Margin="0,-2,0,0" Foreground="#E3E3E5" VerticalAlignment="Top" HorizontalAlignment="Center" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">File Spy</Label>
-        <Border x:Name="Table" Margin="0,30,0,0" CornerRadius="10" Background="#FFFEFF">
-            <Grid>
-                <Grid Height="60" VerticalAlignment="Top">
-                    <elements:SwitchControl Margin="10,0,0,0" HorizontalAlignment="Left"/>
-                    <Border x:Name="SettingsButton" Cursor="Hand" MouseLeftButtonUp="SettingsButton_MouseLeftButtonUp"  Margin="0,0,10,0" HorizontalAlignment="Right" Height="30" Width="80" CornerRadius="15">
-                        <Border.Background>
-                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                <GradientStop Color="#579EE1" Offset="0"/>
-                                <GradientStop Color="#127FE8" Offset="0.5"/>
-                            </LinearGradientBrush>
-                        </Border.Background>
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="4" Opacity="0.25" ShadowDepth="2"/>
-                        </Border.Effect>
-                        <Label FontSize="14" FontFamily="./Resources/#Ubuntu" Foreground="#FFFEFF" VerticalAlignment="Center" HorizontalAlignment="Center">Settings</Label>
-                    </Border>
+
+    <Border BorderBrush="Black" BorderThickness="0.5">
+        <Grid>
+            <Border Background="#37B6E5" Opacity="0.40"/>
+            <Grid Width="50" HorizontalAlignment="Left">
+                <Grid Opacity="1" Height="35" VerticalAlignment="Top">
+                    <Grid Margin="0,0,0,0" Height="25" Width="25" HorizontalAlignment="Center">
+                        <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                            <Canvas Name="svg25" Width="48" Height="48">
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Canvas.RenderTransform>
+                                <Canvas.Resources>
+                                    <LinearGradientBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="NPMp5gryGhBwFijU60RIra" MappingMode="Absolute" StartPoint="20,5" EndPoint="28,13">
+                                        <LinearGradientBrush.GradientStops>
+                                            <GradientStopCollection>
+                                                <GradientStop Color="White" Offset="0"/>
+                                                <GradientStop Color="White" Offset="1"/>
+                                            </GradientStopCollection>
+                                        </LinearGradientBrush.GradientStops>
+                                    </LinearGradientBrush>
+                                    <LinearGradientBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="NPMp5gryGhBwFijU60RIrb" MappingMode="Absolute" StartPoint="36,30" EndPoint="44,38">
+                                        <LinearGradientBrush.GradientStops>
+                                            <GradientStopCollection>
+                                                <GradientStop Color="White" Offset="0"/>
+                                                <GradientStop Color="White" Offset="1"/>
+                                            </GradientStopCollection>
+                                        </LinearGradientBrush.GradientStops>
+                                    </LinearGradientBrush>
+                                    <LinearGradientBrush xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" x:Key="NPMp5gryGhBwFijU60RIrc" MappingMode="Absolute" StartPoint="4,30" EndPoint="12,38">
+                                        <LinearGradientBrush.GradientStops>
+                                            <GradientStopCollection>
+                                                <GradientStop Color="White" Offset="0"/>
+                                                <GradientStop Color="White" Offset="1"/>
+                                            </GradientStopCollection>
+                                        </LinearGradientBrush.GradientStops>
+                                    </LinearGradientBrush>
+                                </Canvas.Resources>
+                                <!--Unknown tag: metadata-->
+                                <!--Unknown tag: sodipodi:namedview-->
+                                <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="6" Canvas.Top="8" Width="36" Height="36" Name="circle2" StrokeThickness="4" Stroke="White" StrokeMiterLimit="10"/>
+                                <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="18" Canvas.Top="3" Width="12" Height="12" Name="circle9" Fill="{StaticResource NPMp5gryGhBwFijU60RIra}"/>
+                                <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="34" Canvas.Top="28" Width="12" Height="12" Name="circle16" Fill="{StaticResource NPMp5gryGhBwFijU60RIrb}"/>
+                                <Ellipse xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Canvas.Left="2" Canvas.Top="28" Width="12" Height="12" Name="circle23" Fill="{StaticResource NPMp5gryGhBwFijU60RIrc}"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Grid>
                 </Grid>
-                <Grid Margin="0,60,0,20">
-                    <ListBox x:Name="FullTable" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single" Style="{DynamicResource ListBoxStyle1}">
-                        <ListBox.ItemContainerStyle>
-                            <Style TargetType="{x:Type ListBoxItem}">
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-                                <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-                                <Setter Property="Padding" Value="2,0,0,0"/>
-                                <Setter Property="FocusVisualStyle">
-                                    <Setter.Value>
-                                        <Style>
-                                            <!-- This removes focus visualization -->
-                                            <Setter Property="Control.Template" Value="{x:Null}"/>
-                                        </Style>
-                                    </Setter.Value>
-                                </Setter>
-                                <Setter Property="Template">
-                                    <Setter.Value>
-                                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                            <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
-                                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
-                                            </Border>
-                                            <ControlTemplate.Triggers>
-                                                <Trigger Property="IsEnabled" Value="false">
-                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
-                                                </Trigger>
-                                                <!-- Some default triggers removed to avoid background changes on selection -->
-                                            </ControlTemplate.Triggers>
-                                        </ControlTemplate>
-                                    </Setter.Value>
-                                </Setter>
-                            </Style>
-                        </ListBox.ItemContainerStyle>
-                    </ListBox>
-                    <Label x:Name="DisconnectLabel" Foreground="Red" Opacity="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="./Resources/#Ubuntu" FontSize="13">Connection failed.</Label>
+                <Grid Cursor="Hand" Style="{StaticResource GrayStyle}" Opacity="1" Height="35" VerticalAlignment="Bottom">
+                    <Grid Height="20" Width="20" HorizontalAlignment="Center">
+                        <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" Stretch="Uniform">
+                            <Canvas Name="svg4" Width="32" Height="32">
+                                <Canvas.RenderTransform>
+                                    <TranslateTransform X="0" Y="0"/>
+                                </Canvas.RenderTransform>
+                                <Canvas.Resources/>
+                                <!--Unknown tag: metadata-->
+                                <!--Unknown tag: sodipodi:namedview-->
+                                <Path xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Name="path2" Fill="#FFFFFFFF">
+                                    <Path.Data>
+                                        <PathGeometry Figures="M 13.1875 3 L 13.03125 3.8125 L 12.4375 6.78125 C 11.484375 7.15625 10.625 7.683594 9.84375 8.3125 L 6.9375 7.3125 L 6.15625 7.0625 L 5.75 7.78125 L 3.75 11.21875 L 3.34375 11.9375 L 3.9375 12.46875 L 6.1875 14.4375 C 6.105469 14.949219 6 15.460938 6 16 C 6 16.539063 6.105469 17.050781 6.1875 17.5625 L 3.9375 19.53125 L 3.34375 20.0625 L 3.75 20.78125 L 5.75 24.21875 L 6.15625 24.9375 L 6.9375 24.6875 L 9.84375 23.6875 C 10.625 24.316406 11.484375 24.84375 12.4375 25.21875 L 13.03125 28.1875 L 13.1875 29 L 18.8125 29 L 18.96875 28.1875 L 19.5625 25.21875 C 20.515625 24.84375 21.375 24.316406 22.15625 23.6875 L 25.0625 24.6875 L 25.84375 24.9375 L 26.25 24.21875 L 28.25 20.78125 L 28.65625 20.0625 L 28.0625 19.53125 L 25.8125 17.5625 C 25.894531 17.050781 26 16.539063 26 16 C 26 15.460938 25.894531 14.949219 25.8125 14.4375 L 28.0625 12.46875 L 28.65625 11.9375 L 28.25 11.21875 L 26.25 7.78125 L 25.84375 7.0625 L 25.0625 7.3125 L 22.15625 8.3125 C 21.375 7.683594 20.515625 7.15625 19.5625 6.78125 L 18.96875 3.8125 L 18.8125 3 Z M 14.8125 5 L 17.1875 5 L 17.6875 7.59375 L 17.8125 8.1875 L 18.375 8.375 C 19.511719 8.730469 20.542969 9.332031 21.40625 10.125 L 21.84375 10.53125 L 22.40625 10.34375 L 24.9375 9.46875 L 26.125 11.5 L 24.125 13.28125 L 23.65625 13.65625 L 23.8125 14.25 C 23.941406 14.820313 24 15.402344 24 16 C 24 16.597656 23.941406 17.179688 23.8125 17.75 L 23.6875 18.34375 L 24.125 18.71875 L 26.125 20.5 L 24.9375 22.53125 L 22.40625 21.65625 L 21.84375 21.46875 L 21.40625 21.875 C 20.542969 22.667969 19.511719 23.269531 18.375 23.625 L 17.8125 23.8125 L 17.6875 24.40625 L 17.1875 27 L 14.8125 27 L 14.3125 24.40625 L 14.1875 23.8125 L 13.625 23.625 C 12.488281 23.269531 11.457031 22.667969 10.59375 21.875 L 10.15625 21.46875 L 9.59375 21.65625 L 7.0625 22.53125 L 5.875 20.5 L 7.875 18.71875 L 8.34375 18.34375 L 8.1875 17.75 C 8.058594 17.179688 8 16.597656 8 16 C 8 15.402344 8.058594 14.820313 8.1875 14.25 L 8.34375 13.65625 L 7.875 13.28125 L 5.875 11.5 L 7.0625 9.46875 L 9.59375 10.34375 L 10.15625 10.53125 L 10.59375 10.125 C 11.457031 9.332031 12.488281 8.730469 13.625 8.375 L 14.1875 8.1875 L 14.3125 7.59375 Z M 16 11 C 13.25 11 11 13.25 11 16 C 11 18.75 13.25 21 16 21 C 18.75 21 21 18.75 21 16 C 21 13.25 18.75 11 16 11 Z M 16 13 C 17.667969 13 19 14.332031 19 16 C 19 17.667969 17.667969 19 16 19 C 14.332031 19 13 17.667969 13 16 C 13 14.332031 14.332031 13 16 13 Z" FillRule="NonZero"/>
+                                    </Path.Data>
+                                </Path>
+                            </Canvas>
+                        </Viewbox>
+                    </Grid>
                 </Grid>
             </Grid>
-        </Border>
-    </Grid>
+            <Grid Margin="50,0,0,0" Background="#FFFFFFFF">
+                <Label Margin="10,50,0,0" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Left">Users:</Label>
+                <elements:SwitchControl x:Name="SilenceControll" Margin="0,50,20,0" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                <Line X1="10" X2="445" Y1="85" Y2="85" StrokeThickness="1" Stroke="#40000000"/>
+                <Border Margin="10,90,10,0">
+                    <Grid>
+                        <Label x:Name="DisconnectLabel" Foreground="Red" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center">Connection lost.</Label>
+                        <ListBox x:Name="FullTable" VirtualizingPanel.ScrollUnit="Pixel" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled" SelectionMode="Single" Style="{DynamicResource ListBoxStyle1}">
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                    <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                                    <Setter Property="Padding" Value="2,0,0,0"/>
+                                    <Setter Property="FocusVisualStyle">
+                                        <Setter.Value>
+                                            <Style>
+                                                <!-- This removes focus visualization -->
+                                                <Setter Property="Control.Template" Value="{x:Null}"/>
+                                            </Style>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+                                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsEnabled" Value="false">
+                                                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                                    </Trigger>
+                                                    <!-- Some default triggers removed to avoid background changes on selection -->
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+                        </ListBox>
+                    </Grid>
+                </Border>
+                <Grid Margin="1" Height="30" VerticalAlignment="Top">
+                    <Grid MouseLeftButtonDown="Topper_MouseLeftButtonDown" Background="White" Opacity="0"/>
+                    <Grid x:Name="CloseButton" Style="{StaticResource RedStyle}" Width="45" MouseLeftButtonUp="CloseButton_MouseLeftButtonUp" Cursor="Hand" HorizontalAlignment="Right">
+                        <Grid Margin="7">
+                            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FF212121" Geometry="F1M8.583,8L13,12.424 12.424,13 8,8.583 3.576,13 3,12.424 7.417,8 3,3.576 3.576,3 8,7.417 12.424,3 13,3.576z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </Grid>
+                    </Grid>
+                    <Grid Style="{StaticResource GrayStyle}" Width="45" MouseLeftButtonUp="MinimazeButton_MouseLeftButtonUp" Cursor="Hand" Margin="0,0,45,0" HorizontalAlignment="Right">
+                        <Grid Margin="7">
+                            <Viewbox xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+                                <Rectangle Width="16" Height="16">
+                                    <Rectangle.Fill>
+                                        <DrawingBrush>
+                                            <DrawingBrush.Drawing>
+                                                <DrawingGroup>
+                                                    <DrawingGroup.Children>
+                                                        <GeometryDrawing Brush="#00FFFFFF" Geometry="F1M16,16L0,16 0,0 16,0z" />
+                                                        <GeometryDrawing Brush="#FF212121" Geometry="F1M3,8L13,8 13,7 3,7z" />
+                                                    </DrawingGroup.Children>
+                                                </DrawingGroup>
+                                            </DrawingBrush.Drawing>
+                                        </DrawingBrush>
+                                    </Rectangle.Fill>
+                                </Rectangle>
+                            </Viewbox>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Border>
 </Window>

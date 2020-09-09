@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Animation;
 
 namespace FileSpy.Windows
 {
@@ -50,6 +51,65 @@ namespace FileSpy.Windows
 
             Task.Run(() =>
             {
+                Dispatcher.Invoke(() =>
+                {
+                    var opacityAnim = new DoubleAnimation();
+                    opacityAnim.From = 0;
+                    opacityAnim.To = 1;
+                    opacityAnim.Duration = TimeSpan.FromSeconds(2);
+                    opacityAnim.RepeatBehavior = RepeatBehavior.Forever;
+                    Circle1.BeginAnimation(System.Windows.Shapes.Ellipse.OpacityProperty, opacityAnim);
+
+                    var circleAnim = new DoubleAnimation();
+                    circleAnim.From = 80;
+                    circleAnim.To = 20;
+                    circleAnim.Duration = TimeSpan.FromSeconds(2);
+                    circleAnim.RepeatBehavior = RepeatBehavior.Forever;
+                    Circle1.BeginAnimation(System.Windows.Shapes.Ellipse.WidthProperty, circleAnim);
+                    Circle1.BeginAnimation(System.Windows.Shapes.Ellipse.HeightProperty, circleAnim);
+                });
+
+                Thread.Sleep(670);
+
+                Dispatcher.Invoke(() =>
+                {
+                    var opacityAnim = new DoubleAnimation();
+                    opacityAnim.From = 0;
+                    opacityAnim.To = 1;
+                    opacityAnim.Duration = TimeSpan.FromSeconds(2);
+                    opacityAnim.RepeatBehavior = RepeatBehavior.Forever;
+                    Circle2.BeginAnimation(System.Windows.Shapes.Ellipse.OpacityProperty, opacityAnim);
+
+                    var circleAnim = new DoubleAnimation();
+                    circleAnim.From = 80;
+                    circleAnim.To = 20;
+                    circleAnim.Duration = TimeSpan.FromSeconds(2);
+                    circleAnim.RepeatBehavior = RepeatBehavior.Forever;
+                    Circle2.BeginAnimation(System.Windows.Shapes.Ellipse.WidthProperty, circleAnim);
+                    Circle2.BeginAnimation(System.Windows.Shapes.Ellipse.HeightProperty, circleAnim);
+                });
+
+                Thread.Sleep(670);
+
+                Dispatcher.Invoke(() =>
+                {
+                    var opacityAnim = new DoubleAnimation();
+                    opacityAnim.From = 0;
+                    opacityAnim.To = 1;
+                    opacityAnim.Duration = TimeSpan.FromSeconds(2);
+                    opacityAnim.RepeatBehavior = RepeatBehavior.Forever;
+                    Circle3.BeginAnimation(System.Windows.Shapes.Ellipse.OpacityProperty, opacityAnim);
+
+                    var circleAnim = new DoubleAnimation();
+                    circleAnim.From = 80;
+                    circleAnim.To = 20;
+                    circleAnim.Duration = TimeSpan.FromSeconds(2);
+                    circleAnim.RepeatBehavior = RepeatBehavior.Forever;
+                    Circle3.BeginAnimation(System.Windows.Shapes.Ellipse.WidthProperty, circleAnim);
+                    Circle3.BeginAnimation(System.Windows.Shapes.Ellipse.HeightProperty, circleAnim);
+                });
+
+                /*
                 while (true)
                 {
                     try
@@ -88,7 +148,7 @@ namespace FileSpy.Windows
                     {
                         break;
                     }
-                }
+                }*/
             });
         }
 
@@ -120,6 +180,11 @@ namespace FileSpy.Windows
                 }
                 catch { }
             }
+        }
+
+        public void Done()
+        {
+            Dispatcher.Invoke(() => SpeedLabel.Content = "Done!");
         }
 
         private double GetSmallSize(long size)

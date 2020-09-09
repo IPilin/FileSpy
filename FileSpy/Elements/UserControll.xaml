@@ -6,27 +6,76 @@
              xmlns:local="clr-namespace:FileSpy.Elements"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid Height="46" Width="485">
-        <Border Height="40" Width="480" Margin="0,0,3,0" CornerRadius="10" Background="#FFFEFF">
-            <Border.Effect>
-                <DropShadowEffect BlurRadius="4" Opacity="0.25" ShadowDepth="1"/>
-            </Border.Effect>
-            <Grid>
-                <Label x:Name="NameLabel" MouseUp="NameLabel_MouseUp" Margin="5,0,0,0" MaxWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">Def0lt</Label>
-                <Label x:Name="DesktopLabel" Margin="110,0,0,0" Foreground="#D3D3D3" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14" FontFamily="/FileSpy;component/Resources/#Ubuntu">DESKTOP-09CPLSP</Label>
-                <Ellipse x:Name="FileButton" Opacity="0" IsEnabled="False" MouseLeftButtonUp="FileButton_MouseLeftButtonUp" Margin="0,0,130,0" Cursor="Hand" Fill="#127FE8" HorizontalAlignment="Right" Width="15" Height="15"/>
-                <Ellipse x:Name="VideoButton" Opacity="0" IsEnabled="False" MouseLeftButtonUp="VideoButton_MouseLeftButtonUp"  Margin="0,0,105,0" Cursor="Hand" Fill="#127FE8" HorizontalAlignment="Right" Width="15" Height="15"/>
-                <Ellipse x:Name="KeyButton" Opacity="0" IsEnabled="False" MouseLeftButtonUp="KeyButton_MouseLeftButtonUp"  Margin="0,0,80,0" Cursor="Hand" Fill="#127FE8" HorizontalAlignment="Right" Width="15" Height="15"/>
-                <Border x:Name="SendButton" MouseLeftButtonUp="SendButton_MouseLeftButtonUp" Cursor="Hand" Width="60" Height="30" CornerRadius="15" HorizontalAlignment="Right" Margin="0,0,10,0">
-                    <Border.Background>
-                        <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                            <GradientStop Color="#579EE1" Offset="0"/>
-                            <GradientStop Color="#127FE8" Offset="0.5"/>
-                        </LinearGradientBrush>
-                    </Border.Background>
-                    <Label Foreground="#FFFEFF" FontSize="13" VerticalAlignment="Center" HorizontalAlignment="Center" FontFamily="/FileSpy;component/Resources/#Ubuntu">Send</Label>
-                </Border>
-            </Grid>
-        </Border>
+    <UserControl.Resources>
+        
+        <LinearGradientBrush x:Key="StandartBlue" StartPoint="0,0" EndPoint="0,1">
+                <GradientStop Color="#579EE1" Offset="0"/>
+                <GradientStop Color="#127FE8" Offset="0.5"/>
+        </LinearGradientBrush>
+
+        <Style x:Key="TrigerStyle" TargetType="{x:Type Border}">
+            <Style.Triggers>
+                <Trigger Property="Control.IsMouseOver" Value="True">
+                    <Setter Property="Control.Background" Value="{StaticResource StandartBlue}"/>
+                </Trigger>
+                <Trigger Property="Control.IsMouseOver" Value="False">
+                    <Setter Property="Control.Background" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="LabelStyle" TargetType="{x:Type Label}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=SendButton, Path=IsMouseOver}" Value="True">
+                    <Setter Property="Foreground" Value="White"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=SendButton, Path=IsMouseOver}" Value="False">
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="MainStyle" TargetType="{x:Type Border}">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="BorderBrush" Value="#40000000"/>
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect BlurRadius="4" Opacity="0" ShadowDepth="1"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="#00000000"/>
+                    <Setter Property="Background" Value="#FFFFFFFF"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect BlurRadius="8" Opacity="0.50" ShadowDepth="2"/>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+    </UserControl.Resources>
+    <Grid x:Name="RealGrid" Width="425" Height="50">
+        <Grid x:Name="MainGrid" Margin="0,-50,0,0" VerticalAlignment="Center">
+            <Border Style="{StaticResource MainStyle}" BorderThickness="1" Height="40" Width="420" Margin="0,0,3,0" CornerRadius="5">
+                <Grid>
+                    <Label x:Name="NameLabel" MouseUp="NameLabel_MouseUp" Margin="10,0,0,0" MaxWidth="100" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="18" FontFamily="/FileSpy;component/Resources/#Ubuntu">Def0lt</Label>
+                    <Label x:Name="DesktopLabel" Margin="110,0,0,0" Opacity="0.5" VerticalAlignment="Center" HorizontalAlignment="Left" FontSize="14" FontFamily="/FileSpy;component/Resources/#Ubuntu">DESKTOP-09CPLSP</Label>
+                    <Ellipse x:Name="FileButton" Opacity="0" IsEnabled="False" MouseLeftButtonUp="FileButton_MouseLeftButtonUp" Margin="0,0,140,0" Cursor="Hand" Fill="#127FE8" HorizontalAlignment="Right" Width="15" Height="15"/>
+                    <Ellipse x:Name="VideoButton" Opacity="0" IsEnabled="False" MouseLeftButtonUp="VideoButton_MouseLeftButtonUp"  Margin="0,0,115,0" Cursor="Hand" Fill="#127FE8" HorizontalAlignment="Right" Width="15" Height="15"/>
+                    <Ellipse x:Name="KeyButton" Opacity="0" IsEnabled="False" MouseLeftButtonUp="KeyButton_MouseLeftButtonUp"  Margin="0,0,90,0" Cursor="Hand" Fill="#127FE8" HorizontalAlignment="Right" Width="15" Height="15"/>
+                    <Border x:Name="SendButton" Style="{StaticResource TrigerStyle}" MouseLeftButtonUp="SendButton_MouseLeftButtonUp" Cursor="Hand" Width="80" Height="40" CornerRadius="0,5,5,0" HorizontalAlignment="Right">
+                        <Grid>
+                            <Line Opacity="0.25" X1="0" X2="0" Y1="0" Y2="40" StrokeThickness="1" Stroke="#6a6d70"/>
+                            <Label Style="{StaticResource LabelStyle}" FontSize="14" FontFamily="/FileSpy;component/Resources/#Ubuntu" VerticalContentAlignment="Center" HorizontalAlignment="Center">Send</Label>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

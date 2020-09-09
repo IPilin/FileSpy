@@ -55,6 +55,8 @@ namespace FileSpy.Classes
                         SendMessage(new MessageClass(ID, -1, Commands.Login, 0, Settings.UserName + ";" + Environment.MachineName));
                     }
                     catch { }
+
+                    Thread.Sleep(1);
                 }
             }
         }

@@ -84,9 +84,11 @@
     <Reference Include="NAudio, Version=1.10.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NAudio.1.10.0\lib\net35\NAudio.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero2" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -108,11 +110,20 @@
     </ApplicationDefinition>
     <Compile Include="Classes\Commands.cs" />
     <Compile Include="Classes\ConnectionClass.cs" />
+    <Compile Include="Classes\FileModule\DirMessage.cs" />
     <Compile Include="Classes\ElementCommands.cs" />
+    <Compile Include="Classes\FileModule\FileClass.cs" />
+    <Compile Include="Classes\FileModule\FileData.cs" />
+    <Compile Include="Classes\FileModule\PropData.cs" />
+    <Compile Include="Classes\FlashWindowHelper.cs" />
     <Compile Include="Classes\MessageClass.cs" />
     <Compile Include="Classes\SecuredClass.cs" />
     <Compile Include="Classes\SettingsClass.cs" />
-    <Compile Include="Classes\VideoClass.cs" />
+    <Compile Include="Classes\VideoModule\VideoClass.cs" />
+    <Compile Include="Classes\VideoModule\VideoData.cs" />
+    <Compile Include="Elements\DirectoryControll.xaml.cs">
+      <DependentUpon>DirectoryControll.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Elements\SwitchControl.xaml.cs">
       <DependentUpon>SwitchControl.xaml</DependentUpon>
     </Compile>
@@ -120,8 +131,17 @@
       <DependentUpon>UserControll.xaml</DependentUpon>
     </Compile>
     <Compile Include="WindowBlur.cs" />
+    <Compile Include="Windows\FileWindow.xaml.cs">
+      <DependentUpon>FileWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\GettingWindow.xaml.cs">
       <DependentUpon>GettingWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\LoadingWindow.xaml.cs">
+      <DependentUpon>LoadingWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\PropWindow.xaml.cs">
+      <DependentUpon>PropWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\RequestWindow.xaml.cs">
       <DependentUpon>RequestWindow.xaml</DependentUpon>
@@ -141,6 +161,10 @@
     <Compile Include="Windows\VideoWindow.xaml.cs">
       <DependentUpon>VideoWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Elements\DirectoryControll.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Elements\SwitchControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -161,7 +185,19 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Windows\FileWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\GettingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\LoadingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\PropWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
